@@ -1,7 +1,38 @@
+# Build output
 .next/
-node_modules/
-tsconfig.tsbuildinfo
-.env*
-!.env.example
 dist/
 coverage/
+tsconfig.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Vercel (project/org IDs, local deploy config)
+.vercel/
+
+# Credentials & keys
+*.pem
+*.key
+*.p12
+*.pfx
+.auth
+.netrc
+.npmrc
+.secrets
+secrets/
+credentials/
+
+# Logs (may contain tokens or paths)
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
