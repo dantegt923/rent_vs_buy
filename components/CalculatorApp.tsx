@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { HeadlineResult } from "@/components/results/HeadlineResult";
 import { NetWorthChart } from "@/components/results/NetWorthChart";
@@ -12,6 +12,9 @@ import { InputRail } from "@/components/sections/InputRail";
 import { calculate } from "@/lib/engine";
 import { useScenarioStore } from "@/lib/store/scenarioStore";
 
+const DESKTOP_LAYOUT_QUERY = "(min-width: 1024px)";
+const COMPARE_LAYOUT_QUERY = "(min-width: 1280px)";
+
 export function CalculatorApp() {
   const scenario = useScenarioStore((state) => state.scenario);
   const scenarios = useScenarioStore((state) => state.scenarios);
@@ -19,13 +22,50 @@ export function CalculatorApp() {
   const compareMode = useScenarioStore((state) => state.compareMode);
   const displayMode = useScenarioStore((state) => state.displayMode);
   const themeMode = useScenarioStore((state) => state.themeMode);
+  const headlineYear = useScenarioStore((state) => state.headlineYear);
   const results = useMemo(() => calculate(scenario), [scenario]);
   const resultsA = useMemo(() => calculate(scenarios.A), [scenarios.A]);
   const resultsB = useMemo(() => calculate(scenarios.B), [scenarios.B]);
+  const resultsColumnRef = useRef<HTMLElement>(null);
+  const [assumptionsPanelHeight, setAssumptionsPanelHeight] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", themeMode === "dark");
   }, [themeMode]);
+
+  useEffect(() => {
+    const resultsColumn = resultsColumnRef.current;
+    if (!resultsColumn) {
+      return;
+    }
+
+    const layoutQuery = compareMode ? COMPARE_LAYOUT_QUERY : DESKTOP_LAYOUT_QUERY;
+    const media = window.matchMedia(layoutQuery);
+
+    const syncAssumptionsHeight = () => {
+      if (!media.matches) {
+        setAssumptionsPanelHeight(null);
+        return;
+      }
+
+      setAssumptionsPanelHeight(resultsColumn.getBoundingClientRect().height);
+    };
+
+    syncAssumptionsHeight();
+
+    const resizeObserver = new ResizeObserver(syncAssumptionsHeight);
+    resizeObserver.observe(resultsColumn);
+    media.addEventListener("change", syncAssumptionsHeight);
+    window.addEventListener("resize", syncAssumptionsHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      media.removeEventListener("change", syncAssumptionsHeight);
+      window.removeEventListener("resize", syncAssumptionsHeight);
+    };
+  }, [compareMode, displayMode, headlineYear, scenario, scenarios]);
 
   return (
     <main className="relative min-h-screen overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
@@ -59,14 +99,21 @@ export function CalculatorApp() {
           </div>
         </header>
         <div
-          className={`relative grid gap-4 sm:gap-6 ${
+          className={`relative grid items-start gap-4 sm:gap-6 ${
             compareMode
-              ? "xl:grid-cols-[minmax(280px,42%)_minmax(0,1fr)] xl:items-stretch"
-              : "lg:grid-cols-[minmax(280px,380px)_minmax(0,1fr)] lg:items-stretch"
+              ? "xl:grid-cols-[minmax(280px,42%)_minmax(0,1fr)]"
+              : "lg:grid-cols-[minmax(280px,380px)_minmax(0,1fr)]"
           }`}
         >
-          <aside className="min-h-0 lg:flex lg:h-full lg:min-h-full lg:flex-col lg:self-stretch">
-            <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+          <aside className="min-h-0 min-w-0">
+            <div
+              className="lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
+              style={
+                assumptionsPanelHeight === null
+                  ? undefined
+                  : { height: assumptionsPanelHeight }
+              }
+            >
               {compareMode ? (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                   <ScenarioRail scenarioId="A" />
@@ -77,7 +124,10 @@ export function CalculatorApp() {
               )}
             </div>
           </aside>
-          <section className="min-h-0 min-w-0 space-y-4 sm:space-y-6">
+          <section
+            className="min-h-0 min-w-0 space-y-4 sm:space-y-6"
+            ref={resultsColumnRef}
+          >
             {compareMode ? (
               <>
                 <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
@@ -108,16 +158,14 @@ export function CalculatorApp() {
 
 function ScenarioRail({ scenarioId }: { scenarioId: "A" | "B" }) {
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="operator-panel shrink-0 rounded-sm p-4">
+    <div className="space-y-4">
+      <div className="operator-panel rounded-sm p-4">
         <p className="operator-kicker">Scenario_{scenarioId}</p>
         <h2 className="operator-title mt-1 text-xl sm:text-2xl">
           Assumption Stack
         </h2>
       </div>
-      <div className="min-h-0 flex-1">
-        <InputRail scenarioId={scenarioId} />
-      </div>
+      <InputRail scenarioId={scenarioId} />
     </div>
   );
 }
