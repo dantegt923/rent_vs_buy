@@ -17,7 +17,7 @@ export function SectionCard({ title, eyebrow, children }: SectionCardProps) {
           {eyebrow ? (
             <p className="operator-kicker">{"// "}{eyebrow}</p>
           ) : null}
-          <h2 className="operator-title text-2xl">{title}</h2>
+          <h2 className="operator-title text-xl sm:text-2xl">{title}</h2>
         </div>
         <span className="text-sm font-bold text-primary transition group-open:rotate-180">
           +

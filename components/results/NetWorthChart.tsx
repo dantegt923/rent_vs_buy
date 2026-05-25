@@ -73,11 +73,11 @@ export function NetWorthChart({
   );
 
   return (
-    <section className="operator-panel rounded-sm p-5">
-      <div className="mb-4 flex items-end justify-between gap-4">
-        <div>
+    <section className="operator-panel rounded-sm p-4 sm:p-5">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <p className="operator-kicker">Unified_Spectrum</p>
-          <h2 className="operator-title mt-1 text-3xl">
+          <h2 className="operator-title mt-1 text-xl sm:text-2xl lg:text-3xl">
             Cost-Adjusted Net Position: Buy vs. Rent
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
@@ -86,11 +86,11 @@ export function NetWorthChart({
             can shift the renter or buyer line when toggled on.
           </p>
         </div>
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
+        <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground sm:text-xs sm:tracking-[0.22em]">
           {displayMode === "real" ? "Inflation-adjusted" : "Nominal"} dollars
         </p>
       </div>
-      <div className="h-[360px]">
+      <div className="h-[240px] min-h-[240px] w-full min-w-0 sm:h-[300px] lg:h-[360px]">
         <ResponsiveContainer height="100%" width="100%">
           <LineChart data={data} margin={{ bottom: 8, left: 12, right: 20, top: 8 }}>
             <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />

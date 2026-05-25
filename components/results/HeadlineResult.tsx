@@ -20,11 +20,11 @@ export function HeadlineResult({ results, displayMode, label }: HeadlineResultPr
   const buyerWins = delta >= 0;
 
   return (
-    <section className="operator-panel rounded-sm p-6">
+    <section className="operator-panel rounded-sm p-4 sm:p-6">
       <p className="operator-kicker">
         SYS.STATUS: {label ?? "cost-adjusted net position"}
       </p>
-      <h2 className="operator-title mt-3 text-5xl leading-[0.92]">
+      <h2 className="operator-title mt-3 text-2xl leading-[1.05] sm:text-3xl md:text-4xl lg:text-5xl lg:leading-[0.92]">
         At year {headlineYear}, buying leaves you{" "}
         <span className={buyerWins ? "text-primary" : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]"}>
           {formatCurrency(Math.abs(delta))}
@@ -84,7 +84,7 @@ function Metric({ label, value }: { label: string; value: string | number }) {
       <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 font-serif text-3xl font-bold tabular-nums">{value}</p>
+      <p className="mt-1 font-serif text-2xl font-bold tabular-nums sm:text-3xl">{value}</p>
     </div>
   );
 }

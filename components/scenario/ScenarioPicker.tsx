@@ -56,7 +56,7 @@ export function ScenarioPicker() {
           Saved
         </button>
         {savedOpen ? (
-        <div className="fixed right-6 top-24 z-50 w-80 rounded-sm border border-primary/25 bg-card/95 p-3 shadow-[0_0_32px_hsl(var(--primary)/0.18)] backdrop-blur">
+        <div className="fixed inset-x-4 top-20 z-50 rounded-sm border border-primary/25 bg-card/95 p-3 shadow-[0_0_32px_hsl(var(--primary)/0.18)] backdrop-blur sm:inset-x-auto sm:right-6 sm:w-80">
           <div className="flex gap-2">
             <input
               className="min-w-0 flex-1 rounded-sm border-primary/15 bg-background/45 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em]"

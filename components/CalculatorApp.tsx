@@ -28,26 +28,26 @@ export function CalculatorApp() {
   }, [themeMode]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 py-6 lg:px-8">
+    <main className="relative min-h-screen overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(ellipse_at_70%_0%,hsl(var(--primary)/0.24),transparent_38%),radial-gradient(ellipse_at_8%_18%,hsl(var(--accent)/0.12),transparent_28%)]" />
-      <div className="pointer-events-none absolute right-6 top-28 hidden h-40 w-px bg-primary/50 lg:block" />
-      <p className="pointer-events-none fixed right-3 top-1/2 hidden origin-center rotate-90 text-[10px] font-bold uppercase tracking-[0.42em] text-primary/70 lg:block">
+      <div className="pointer-events-none absolute right-6 top-28 hidden h-40 w-px bg-primary/50 xl:block" />
+      <p className="pointer-events-none fixed right-3 top-1/2 z-10 hidden origin-center rotate-90 text-[10px] font-bold uppercase tracking-[0.42em] text-primary/70 xl:block">
         Scroll Down
       </p>
       <div className="mx-auto max-w-[1440px]">
-        <header className="sticky top-0 z-20 -mx-6 mb-6 border-b border-primary/20 bg-background/75 px-6 py-4 backdrop-blur-xl lg:-mx-8 lg:px-8">
-          <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
-            <div>
-              <p className="operator-kicker">
+        <header className="sticky top-0 z-20 -mx-4 mb-4 border-b border-primary/20 bg-background/75 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:mb-6 sm:px-6 sm:py-4 lg:-mx-8 lg:px-8">
+          <div className="mx-auto flex max-w-[1440px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="operator-kicker text-[9px] sm:text-[10px]">
                 Operators · Analysts · Capital Strategy
               </p>
-              <h1 className="operator-title text-4xl leading-none">
+              <h1 className="operator-title text-2xl leading-none sm:text-3xl lg:text-4xl">
                 Rent / Buy Spectrum
               </h1>
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end sm:gap-3">
               <Link
-                className="rounded-sm border border-primary/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary transition hover:bg-primary/10"
+                className="rounded-sm border border-primary/25 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-primary transition hover:bg-primary/10 sm:text-xs sm:tracking-[0.18em]"
                 href="/methodology"
               >
                 Methodology
@@ -59,24 +59,28 @@ export function CalculatorApp() {
           </div>
         </header>
         <div
-          className={`relative grid gap-6 ${
-            compareMode ? "xl:grid-cols-[minmax(340px,46%)_1fr]" : "lg:grid-cols-[minmax(360px,35%)_1fr]"
+          className={`relative grid gap-4 sm:gap-6 ${
+            compareMode
+              ? "xl:grid-cols-[minmax(280px,42%)_minmax(0,1fr)] xl:items-stretch"
+              : "lg:grid-cols-[minmax(280px,380px)_minmax(0,1fr)] lg:items-stretch"
           }`}
         >
-          <div className="max-h-[calc(100vh-120px)] overflow-y-auto pr-1">
-            {compareMode ? (
-              <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                <ScenarioRail scenarioId="A" />
-                <ScenarioRail scenarioId="B" />
-              </div>
-            ) : (
-              <ScenarioRail scenarioId={activeScenarioId} />
-            )}
-          </div>
-          <section className="space-y-6">
+          <aside className="min-h-0 lg:flex lg:h-full lg:min-h-full lg:flex-col lg:self-stretch">
+            <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
+              {compareMode ? (
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                  <ScenarioRail scenarioId="A" />
+                  <ScenarioRail scenarioId="B" />
+                </div>
+              ) : (
+                <ScenarioRail scenarioId={activeScenarioId} />
+              )}
+            </div>
+          </aside>
+          <section className="min-h-0 min-w-0 space-y-4 sm:space-y-6">
             {compareMode ? (
               <>
-                <div className="grid gap-4 xl:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                   <HeadlineResult displayMode={displayMode} label="Scenario A" results={resultsA} />
                   <HeadlineResult displayMode={displayMode} label="Scenario B" results={resultsB} />
                 </div>
@@ -104,14 +108,16 @@ export function CalculatorApp() {
 
 function ScenarioRail({ scenarioId }: { scenarioId: "A" | "B" }) {
   return (
-    <div className="space-y-4">
-      <div className="operator-panel rounded-sm p-4">
+    <div className="flex h-full flex-col gap-4">
+      <div className="operator-panel shrink-0 rounded-sm p-4">
         <p className="operator-kicker">Scenario_{scenarioId}</p>
-        <h2 className="operator-title mt-1 text-2xl">
+        <h2 className="operator-title mt-1 text-xl sm:text-2xl">
           Assumption Stack
         </h2>
       </div>
-      <InputRail scenarioId={scenarioId} />
+      <div className="min-h-0 flex-1">
+        <InputRail scenarioId={scenarioId} />
+      </div>
     </div>
   );
 }

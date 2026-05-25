@@ -17,14 +17,14 @@ export function YearByYearTable({
 }: YearByYearTableProps) {
   return (
     <details className="operator-panel rounded-sm">
-      <summary className="cursor-pointer list-none px-5 py-4">
+      <summary className="cursor-pointer list-none px-4 py-4 sm:px-5">
         <p className="operator-kicker">{"// "}Details</p>
-        <h2 className="operator-title mt-1 text-3xl">
+        <h2 className="operator-title mt-1 text-2xl sm:text-3xl">
           Year-by-Year Output{label ? ` · ${label}` : ""}
         </h2>
       </summary>
-      <div className="max-h-[520px] overflow-auto border-t border-primary/15">
-        <table className="w-full border-collapse text-sm">
+      <div className="max-h-[420px] overflow-auto border-t border-primary/15 sm:max-h-[520px]">
+        <table className="w-full min-w-[720px] border-collapse text-xs sm:text-sm">
           <thead className="sticky top-0 bg-secondary text-left text-xs uppercase tracking-[0.18em] text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Year</th>

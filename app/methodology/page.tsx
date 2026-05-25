@@ -2,25 +2,25 @@ import Link from "next/link";
 
 export default function MethodologyPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 py-6 lg:px-8">
+    <main className="relative min-h-screen overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(ellipse_at_70%_0%,hsl(var(--primary)/0.24),transparent_38%),radial-gradient(ellipse_at_8%_18%,hsl(var(--accent)/0.12),transparent_28%)]" />
       <div className="mx-auto max-w-3xl">
-        <header className="mb-8 flex items-center justify-between gap-4 border-b border-primary/20 pb-4">
+        <header className="mb-6 flex flex-col gap-4 border-b border-primary/20 pb-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="operator-kicker">Documentation</p>
-            <h1 className="operator-title text-4xl leading-none">
+            <h1 className="operator-title text-3xl leading-none sm:text-4xl">
               Methodology
             </h1>
           </div>
           <Link
-            className="rounded-sm border border-primary/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary transition hover:bg-primary/10"
+            className="w-fit rounded-sm border border-primary/25 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-primary transition hover:bg-primary/10 sm:text-xs sm:tracking-[0.18em]"
             href="/"
           >
             Back to calculator
           </Link>
         </header>
 
-        <article className="operator-panel space-y-8 rounded-sm p-6 text-sm leading-relaxed text-muted-foreground">
+        <article className="operator-panel space-y-6 rounded-sm p-4 text-sm leading-relaxed text-muted-foreground sm:space-y-8 sm:p-6">
           <section className="space-y-3">
             <h2 className="operator-title text-2xl text-foreground">
               What this calculator measures
