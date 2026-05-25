@@ -13,7 +13,12 @@ import {
   YAxis,
 } from "recharts";
 import type { ScenarioResults } from "@/lib/engine";
-import type { DisplayMode } from "@/lib/store/scenarioStore";
+import {
+  getBreakEvenYear,
+  getComparisonValues,
+  OUTCOME_COPY,
+} from "@/lib/results/outcomeDisplay";
+import { useScenarioStore, type DisplayMode } from "@/lib/store/scenarioStore";
 import { formatCompactCurrency, formatCurrency } from "./formatters";
 
 interface NetWorthChartProps {
@@ -37,17 +42,23 @@ export function NetWorthChart({
   compareResults,
   displayMode,
 }: NetWorthChartProps) {
+  const outcomeMode = useScenarioStore((state) => state.outcomeMode);
+  const copy = OUTCOME_COPY[outcomeMode];
+  const breakEvenYear = getBreakEvenYear(results, outcomeMode);
+
   const data: ChartRow[] = useMemo(
     () =>
       results.comparison
-        .map((row) => ({
-          year: row.year,
-          buyer:
-            displayMode === "real" ? row.realBuyerNetResult : row.buyerNetResult,
-          renter:
-            displayMode === "real" ? row.realRenterNetResult : row.renterNetResult,
-          delta: displayMode === "real" ? row.realDelta : row.delta,
-        }))
+        .map((row) => {
+          const values = getComparisonValues(row, displayMode, outcomeMode);
+
+          return {
+            year: row.year,
+            buyer: values.buyer,
+            renter: values.renter,
+            delta: values.delta,
+          };
+        })
         .map((row) => {
           const comparisonB = compareResults?.comparison[row.year - 1];
 
@@ -55,22 +66,20 @@ export function NetWorthChart({
             return row;
           }
 
+          const valuesB = getComparisonValues(comparisonB, displayMode, outcomeMode);
+
           return {
             ...row,
-            buyerB:
-              displayMode === "real"
-                ? comparisonB.realBuyerNetResult
-                : comparisonB.buyerNetResult,
-            renterB:
-              displayMode === "real"
-                ? comparisonB.realRenterNetResult
-                : comparisonB.renterNetResult,
-            deltaB:
-              displayMode === "real" ? comparisonB.realDelta : comparisonB.delta,
+            buyerB: valuesB.buyer,
+            renterB: valuesB.renter,
+            deltaB: valuesB.delta,
           };
         }),
-    [compareResults, displayMode, results.comparison],
+    [compareResults, displayMode, outcomeMode, results.comparison],
   );
+
+  const buyerLineName = compareResults ? `A ${copy.buyerLine.toLowerCase()}` : copy.buyerLine;
+  const renterLineName = compareResults ? `A ${copy.renterLine.toLowerCase()}` : copy.renterLine;
 
   return (
     <section className="operator-panel rounded-sm p-4 sm:p-5">
@@ -78,12 +87,10 @@ export function NetWorthChart({
         <div className="min-w-0">
           <p className="operator-kicker">Unified_Spectrum</p>
           <h2 className="operator-title mt-1 text-xl sm:text-2xl lg:text-3xl">
-            Cost-Adjusted Net Position: Buy vs. Rent
+            {copy.chartTitle}
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Unrecoverable housing costs minus asset recovery on each path—not
-            end-state net worth. Optional cashflow assumptions in Investment
-            can shift the renter or buyer line when toggled on.
+            {copy.chartDescription}
           </p>
         </div>
         <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground sm:text-xs sm:tracking-[0.22em]">
@@ -102,11 +109,11 @@ export function NetWorthChart({
             />
             <Tooltip content={<ChartTooltip compareMode={Boolean(compareResults)} />} />
             <Legend />
-            {results.breakEvenYear ? (
+            {breakEvenYear ? (
               <ReferenceLine
                 label="Break-even"
                 stroke="hsl(var(--accent))"
-                x={results.breakEvenYear}
+                x={breakEvenYear}
               />
             ) : null}
             <Line
@@ -114,7 +121,7 @@ export function NetWorthChart({
               dataKey="buyer"
               dot={false}
               isAnimationActive={false}
-              name={compareResults ? "A buyer adjusted position" : "Buyer adjusted position"}
+              name={buyerLineName}
               stroke="hsl(var(--primary))"
               strokeWidth={3}
               type="monotone"
@@ -124,7 +131,7 @@ export function NetWorthChart({
               dataKey="renter"
               dot={false}
               isAnimationActive={false}
-              name={compareResults ? "A renter adjusted position" : "Renter adjusted position"}
+              name={renterLineName}
               stroke="hsl(var(--accent))"
               strokeWidth={3}
               type="monotone"
@@ -136,7 +143,7 @@ export function NetWorthChart({
                   dataKey="buyerB"
                   dot={false}
                   isAnimationActive={false}
-                  name="B buyer adjusted position"
+                  name={`B ${copy.buyerLine.toLowerCase()}`}
                   stroke="hsl(var(--primary) / 0.55)"
                   strokeDasharray="8 6"
                   strokeWidth={3}
@@ -147,7 +154,7 @@ export function NetWorthChart({
                   dataKey="renterB"
                   dot={false}
                   isAnimationActive={false}
-                  name="B renter adjusted position"
+                  name={`B ${copy.renterLine.toLowerCase()}`}
                   stroke="hsl(var(--accent) / 0.55)"
                   strokeDasharray="8 6"
                   strokeWidth={3}

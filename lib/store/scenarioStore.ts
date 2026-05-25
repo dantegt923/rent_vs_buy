@@ -15,6 +15,7 @@ import type {
 import { SCENARIO_STORAGE_KEY } from "./persistence";
 
 export type DisplayMode = "nominal" | "real";
+export type OutcomeMode = "costAdjusted" | "netWorth";
 export type ThemeMode = "light" | "dark";
 export type ScenarioId = "A" | "B";
 
@@ -34,11 +35,13 @@ interface ScenarioStoreState {
   compareMode: boolean;
   savedScenarios: SavedScenario[];
   displayMode: DisplayMode;
+  outcomeMode: OutcomeMode;
   themeMode: ThemeMode;
   headlineYear: number;
   setActiveScenarioId: (scenarioId: ScenarioId) => void;
   setCompareMode: (compareMode: boolean) => void;
   setDisplayMode: (displayMode: DisplayMode) => void;
+  setOutcomeMode: (outcomeMode: OutcomeMode) => void;
   setThemeMode: (themeMode: ThemeMode) => void;
   setHeadlineYear: (headlineYear: number) => void;
   saveNamedScenario: (name: string, scenarioId?: ScenarioId) => void;
@@ -157,6 +160,7 @@ export const useScenarioStore = create<ScenarioStoreState>()(
       compareMode: false,
       savedScenarios: [],
       displayMode: "nominal",
+      outcomeMode: "costAdjusted",
       themeMode: "dark",
       headlineYear: defaultScenario.saleYear,
       setActiveScenarioId: (activeScenarioId) =>
@@ -166,6 +170,7 @@ export const useScenarioStore = create<ScenarioStoreState>()(
         })),
       setCompareMode: (compareMode) => set({ compareMode }),
       setDisplayMode: (displayMode) => set({ displayMode }),
+      setOutcomeMode: (outcomeMode) => set({ outcomeMode }),
       setThemeMode: (themeMode) => set({ themeMode }),
       setHeadlineYear: (headlineYear) =>
         set((state) => ({
@@ -444,6 +449,7 @@ export const useScenarioStore = create<ScenarioStoreState>()(
         compareMode: state.compareMode,
         savedScenarios: state.savedScenarios,
         displayMode: state.displayMode,
+        outcomeMode: state.outcomeMode,
         themeMode: state.themeMode,
         headlineYear: state.headlineYear,
       }),

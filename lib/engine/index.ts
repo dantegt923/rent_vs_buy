@@ -48,7 +48,8 @@ export function calculate(inputs: ScenarioInputs): ScenarioResults {
   const buyPath = calculateBuyPath(inputs);
   const rentPath = calculateRentPath(inputs, buyPath);
   const comparison = comparePaths(buyPath, rentPath, inputs.macro.inflationRate);
-  const breakEvenYear = findBreakEvenYear(comparison);
+  const breakEvenYear = findBreakEvenYear(comparison, "costAdjusted");
+  const netWorthBreakEvenYear = findBreakEvenYear(comparison, "netWorth");
   const saleYearResult = comparison[inputs.saleYear - 1];
 
   return {
@@ -57,6 +58,7 @@ export function calculate(inputs: ScenarioInputs): ScenarioResults {
     rentPath,
     comparison,
     breakEvenYear,
+    netWorthBreakEvenYear,
     saleYearResult,
   };
 }

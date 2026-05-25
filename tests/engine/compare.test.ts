@@ -53,6 +53,23 @@ describe("comparison", () => {
 
     expect(comparison[0].delta).toBe(10);
     expect(comparison[0].realDelta).toBeCloseTo(9.09, 2);
+    expect(comparison[0].buyerNetWorth).toBe(110);
+    expect(comparison[0].renterNetWorth).toBe(100);
+    expect(comparison[0].netWorthDelta).toBe(10);
+  });
+
+  it("finds break-even years for net worth independently", () => {
+    expect(
+      findBreakEvenYear(
+        [
+          comparisonRow(1, -10, -5),
+          comparisonRow(2, -2, -1),
+          comparisonRow(3, 1, 2),
+          comparisonRow(4, 3, 4),
+        ],
+        "netWorth",
+      ),
+    ).toBe(3);
   });
 
   it("finds the first durable positive break-even year", () => {
@@ -68,7 +85,7 @@ describe("comparison", () => {
   });
 });
 
-function comparisonRow(year: number, delta: number) {
+function comparisonRow(year: number, delta: number, netWorthDelta = delta) {
   return {
     year,
     buyerNetResult: delta,
@@ -77,5 +94,11 @@ function comparisonRow(year: number, delta: number) {
     realBuyerNetResult: delta,
     realRenterNetResult: 0,
     realDelta: delta,
+    buyerNetWorth: netWorthDelta,
+    renterNetWorth: 0,
+    netWorthDelta,
+    realBuyerNetWorth: netWorthDelta,
+    realRenterNetWorth: 0,
+    realNetWorthDelta: netWorthDelta,
   };
 }

@@ -132,7 +132,12 @@ export function CalculatorApp() {
               <>
                 <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                   <HeadlineResult displayMode={displayMode} label="Scenario A" results={resultsA} />
-                  <HeadlineResult displayMode={displayMode} label="Scenario B" results={resultsB} />
+                  <HeadlineResult
+                    displayMode={displayMode}
+                    label="Scenario B"
+                    results={resultsB}
+                    showOutcomeToggle={false}
+                  />
                 </div>
                 <NetWorthChart
                   compareResults={resultsB}

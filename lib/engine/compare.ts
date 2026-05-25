@@ -12,7 +12,10 @@ export function comparePaths(
 ): ComparisonYearResult[] {
   return buyPath.map((buyYear, index) => {
     const rentYear = rentPath[index];
+    const buyerNetWorth = buyYear.saleProceeds + buyYear.sidePortfolioLiquidation;
+    const renterNetWorth = rentYear.liquidationValue;
     const delta = buyYear.netEconomicResult - rentYear.netEconomicResult;
+    const netWorthDelta = buyerNetWorth - renterNetWorth;
 
     return {
       year: buyYear.year,
@@ -30,19 +33,37 @@ export function comparePaths(
         buyYear.year,
       ),
       realDelta: toRealDollars(delta, inflationRate, buyYear.year),
+      buyerNetWorth,
+      renterNetWorth,
+      netWorthDelta,
+      realBuyerNetWorth: toRealDollars(
+        buyerNetWorth,
+        inflationRate,
+        buyYear.year,
+      ),
+      realRenterNetWorth: toRealDollars(
+        renterNetWorth,
+        inflationRate,
+        buyYear.year,
+      ),
+      realNetWorthDelta: toRealDollars(netWorthDelta, inflationRate, buyYear.year),
     };
   });
 }
 
 export function findBreakEvenYear(
   comparison: ComparisonYearResult[],
+  mode: "costAdjusted" | "netWorth" = "costAdjusted",
 ): number | null {
+  const getDelta = (row: ComparisonYearResult) =>
+    mode === "netWorth" ? row.netWorthDelta : row.delta;
+
   const firstDurablePositiveYear = comparison.find((row, index) => {
-    if (row.delta <= 0) {
+    if (getDelta(row) <= 0) {
       return false;
     }
 
-    return comparison.slice(index).every((futureRow) => futureRow.delta > 0);
+    return comparison.slice(index).every((futureRow) => getDelta(futureRow) > 0);
   });
 
   return firstDurablePositiveYear?.year ?? null;

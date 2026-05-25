@@ -161,6 +161,12 @@ export interface ComparisonYearResult {
   realBuyerNetResult: number;
   realRenterNetResult: number;
   realDelta: number;
+  buyerNetWorth: number;
+  renterNetWorth: number;
+  netWorthDelta: number;
+  realBuyerNetWorth: number;
+  realRenterNetWorth: number;
+  realNetWorthDelta: number;
 }
 
 export interface ScenarioResults {
@@ -169,5 +175,6 @@ export interface ScenarioResults {
   rentPath: RentYearResult[];
   comparison: ComparisonYearResult[];
   breakEvenYear: number | null;
+  netWorthBreakEvenYear: number | null;
   saleYearResult: ComparisonYearResult;
 }
