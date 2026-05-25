@@ -9,6 +9,10 @@ import { DisplayModeToggle } from "@/components/scenario/DisplayModeToggle";
 import { ScenarioPicker } from "@/components/scenario/ScenarioPicker";
 import { ThemeToggle } from "@/components/scenario/ThemeToggle";
 import { InputRail } from "@/components/sections/InputRail";
+import {
+  AssumptionsCollapseToggle,
+  AssumptionsPanelsProvider,
+} from "@/components/sections/AssumptionsPanelsContext";
 import { calculate } from "@/lib/engine";
 import { useScenarioStore } from "@/lib/store/scenarioStore";
 
@@ -163,14 +167,19 @@ export function CalculatorApp() {
 
 function ScenarioRail({ scenarioId }: { scenarioId: "A" | "B" }) {
   return (
-    <div className="space-y-4">
-      <div className="operator-panel rounded-sm p-4">
-        <p className="operator-kicker">Scenario_{scenarioId}</p>
-        <h2 className="operator-title mt-1 text-xl sm:text-2xl">
-          Assumption Stack
-        </h2>
+    <AssumptionsPanelsProvider>
+      <div className="space-y-4">
+        <div className="operator-panel flex items-start justify-between gap-3 rounded-sm p-4">
+          <div className="min-w-0">
+            <p className="operator-kicker">Scenario_{scenarioId}</p>
+            <h2 className="operator-title mt-1 text-xl sm:text-2xl">
+              Assumption Stack
+            </h2>
+          </div>
+          <AssumptionsCollapseToggle />
+        </div>
+        <InputRail scenarioId={scenarioId} />
       </div>
-      <InputRail scenarioId={scenarioId} />
-    </div>
+    </AssumptionsPanelsProvider>
   );
 }

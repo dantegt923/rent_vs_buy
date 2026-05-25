@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useAssumptionsPanelState } from "./AssumptionsPanelsContext";
 
 interface SectionCardProps {
   title: string;
@@ -7,10 +10,13 @@ interface SectionCardProps {
 }
 
 export function SectionCard({ title, eyebrow, children }: SectionCardProps) {
+  const { open, setOpen } = useAssumptionsPanelState();
+
   return (
     <details
       className="operator-panel group rounded-sm"
-      open
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+      open={open}
     >
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-primary/15 px-4 py-3">
         <div>
