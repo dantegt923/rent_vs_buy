@@ -26,25 +26,50 @@ export default function MethodologyPage() {
               What this calculator measures
             </h2>
             <p>
-              The headline and chart show an{" "}
-              <strong className="text-foreground">
-                unrecoverable cost-adjusted net position
-              </strong>
-              at each year—not your total net worth if you stayed in that path
-              forever.
+              The headline, metrics, and chart can show two different views. Use
+              the <strong className="text-foreground">Cost-adjusted / Net worth</strong>{" "}
+              toggle in the top-right of the headline panel to switch between them.
+              Both use the same inputs and assumptions—the difference is what each
+              path subtracts (or does not subtract) from liquidation value.
             </p>
-            <p>
-              Think of it as: if you sold everything at that year (the home or
-              the renter&apos;s portfolio, after estimated taxes), how much would
-              you have left after subtracting housing costs you cannot get back
-              through those assets?
-            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-sm border border-primary/15 bg-secondary/40 p-4">
+                <h3 className="font-semibold text-foreground">
+                  Cost-adjusted (default)
+                </h3>
+                <p className="mt-2">
+                  An{" "}
+                  <strong className="text-foreground">
+                    unrecoverable cost-adjusted net position
+                  </strong>
+                  . If you liquidated at that year, how much would you keep after
+                  subtracting housing costs you cannot recover through the home or
+                  portfolio?
+                </p>
+              </div>
+              <div className="rounded-sm border border-primary/15 bg-secondary/40 p-4">
+                <h3 className="font-semibold text-foreground">Net worth</h3>
+                <p className="mt-2">
+                  End-state wealth if you liquidated at that year—sale proceeds or
+                  portfolio value after tax,{" "}
+                  <em>without</em> subtracting cumulative rent or operating
+                  ownership costs paid along the way.
+                </p>
+              </div>
+            </div>
           </section>
 
           <section className="space-y-3">
             <h2 className="operator-title text-2xl text-foreground">
-              Buyer path
+              Cost-adjusted net position
             </h2>
+            <p>
+              This is the default view. It answers: after selling the home or
+              liquidating the renter&apos;s portfolio at year N, how much is left
+              once unrecoverable housing spend is accounted for?
+            </p>
+
+            <h3 className="pt-2 font-semibold text-foreground">Buyer path</h3>
             <p>
               Each year we track what you spend on ownership: mortgage payments
               (principal and interest), PMI, property tax, insurance, HOA,
@@ -67,12 +92,8 @@ export default function MethodologyPage() {
               Buyer position = sale proceeds (+ optional side portfolio) −
               cumulative operating costs
             </div>
-          </section>
 
-          <section className="space-y-3">
-            <h2 className="operator-title text-2xl text-foreground">
-              Renter path
-            </h2>
+            <h3 className="pt-2 font-semibold text-foreground">Renter path</h3>
             <p>
               The renter starts with a portfolio equal to the buyer&apos;s initial
               cash outlay (down payment + closing costs)—the money the buyer
@@ -94,6 +115,52 @@ export default function MethodologyPage() {
               Renter position = portfolio liquidation (after tax) − cumulative
               rent and insurance paid
             </div>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="operator-title text-2xl text-foreground">Net worth</h2>
+            <p>
+              Select <strong className="text-foreground">Net worth</strong> on the
+              headline toggle to switch to this view. It shows liquidation value at
+              each year only—no subtraction of cumulative housing costs. Break-even
+              and the chart use separate net-worth deltas, so crossover years can
+              differ from the cost-adjusted view.
+            </p>
+
+            <h3 className="pt-2 font-semibold text-foreground">Buyer net worth</h3>
+            <p>
+              Estimated cash from selling the home at year N, plus any buyer side
+              portfolio from the optional cashflow-savings assumption. Side portfolio
+              is included only when that toggle is on; it never double-counts down
+              payment or principal already in home equity.
+            </p>
+            <div className="rounded-sm border border-primary/15 bg-secondary/40 p-4 font-mono text-xs text-foreground">
+              Buyer net worth = sale proceeds + side portfolio liquidation (after
+              tax)
+            </div>
+            <p className="text-xs">
+              Sale proceeds = home value − remaining mortgage − selling costs −
+              capital gains tax on the sale.
+            </p>
+
+            <h3 className="pt-2 font-semibold text-foreground">Renter net worth</h3>
+            <p>
+              The renter&apos;s investment portfolio liquidation value at year N
+              (after estimated capital gains tax on the taxable portion). Cumulative
+              rent and insurance paid are not subtracted—those costs are already
+              reflected in a smaller portfolio if the renter had less to invest.
+            </p>
+            <div className="rounded-sm border border-primary/15 bg-secondary/40 p-4 font-mono text-xs text-foreground">
+              Renter net worth = portfolio liquidation (after tax)
+            </div>
+
+            <p>
+              <strong className="text-foreground">When to use which view:</strong>{" "}
+              Cost-adjusted net position is better for comparing total economic
+              outcome after housing spend. Net worth is better for comparing
+              end-state assets if you sold everything at that year, ignoring the
+              path of costs that got you there.
+            </p>
           </section>
 
           <section className="space-y-3">
@@ -135,10 +202,13 @@ export default function MethodologyPage() {
               Comparing the two paths
             </h2>
             <p>
-              The delta at any year is buyer adjusted position minus renter
-              adjusted position. Break-even is the first year where buying stays
-              ahead for the rest of the horizon (a durable crossover, not a
-              one-year blip).
+              In <strong className="text-foreground">cost-adjusted</strong> mode,
+              the delta at any year is buyer adjusted position minus renter adjusted
+              position. In <strong className="text-foreground">net worth</strong>{" "}
+              mode, it is buyer net worth minus renter net worth. Break-even is the
+              first year where buying stays ahead for the rest of the horizon (a
+              durable crossover, not a one-year blip)—computed separately for each
+              mode.
             </p>
             <p>
               Nominal dollars use your inputs as entered. Real (inflation-adjusted)
