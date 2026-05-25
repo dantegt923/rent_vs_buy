@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import Link from "next/link";
 import { HeadlineResult } from "@/components/results/HeadlineResult";
 import { NetWorthChart } from "@/components/results/NetWorthChart";
 import { YearByYearTable } from "@/components/results/YearByYearTable";
@@ -45,6 +46,12 @@ export function CalculatorApp() {
               </h1>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-3">
+              <Link
+                className="rounded-sm border border-primary/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary transition hover:bg-primary/10"
+                href="/methodology"
+              >
+                Methodology
+              </Link>
               <ScenarioPicker />
               <DisplayModeToggle />
               <ThemeToggle />

@@ -1,4 +1,12 @@
 import { calculateInitialBuyerCashOutlay } from "./buyPath";
+import {
+  contributeToPortfolio,
+  createPortfolio,
+  growPortfolio,
+  snapshotPortfolio,
+  withdrawFromPortfolio,
+} from "./portfolio";
+import { calculateRentAnnualOutflow } from "./rentHelpers";
 import type { BuyYearResult, RentYearResult, ScenarioInputs } from "./types";
 
 export function calculateRentPath(
@@ -6,17 +14,13 @@ export function calculateRentPath(
   buyPath: BuyYearResult[],
 ): RentYearResult[] {
   const initialInvestment = calculateInitialBuyerCashOutlay(inputs);
-  let taxablePortfolioValue = initialInvestment;
-  let taxableBasis = initialInvestment;
-  let taxAdvantagedPortfolioValue = 0;
-  let taxAdvantagedBasis = 0;
+  let portfolio = createPortfolio(initialInvestment);
   let cumulativeOutflow = 0;
   const rows: RentYearResult[] = [];
+  const equalizeRenterCashflow = inputs.investment.equalizeRenterCashflow ?? false;
 
   for (let year = 1; year <= inputs.horizonYears; year += 1) {
-    taxablePortfolioValue *= 1 + inputs.investment.expectedAnnualReturn;
-    taxAdvantagedPortfolioValue *= 1 + inputs.investment.expectedAnnualReturn;
-    taxablePortfolioValue *= 1 - inputs.investment.annualTaxDrag;
+    portfolio = growPortfolio(portfolio, inputs);
 
     const rentPaid =
       inputs.rent.monthlyRent *
@@ -27,26 +31,23 @@ export function calculateRentPath(
     cumulativeOutflow += annualOutflow;
 
     const outflowGap = buyPath[year - 1].annualOutflow - annualOutflow;
-    const investedSavings = Math.max(0, outflowGap);
+    let investedSavings = 0;
+    let withdrawnSavings = 0;
 
-    if (investedSavings > 0) {
-      const taxAdvantagedContribution =
-        investedSavings * inputs.investment.taxAdvantagedAccountPercent;
-      const taxableContribution = investedSavings - taxAdvantagedContribution;
-      taxablePortfolioValue += taxableContribution;
-      taxableBasis += taxableContribution;
-      taxAdvantagedPortfolioValue += taxAdvantagedContribution;
-      taxAdvantagedBasis += taxAdvantagedContribution;
+    if (equalizeRenterCashflow) {
+      if (outflowGap > 0) {
+        investedSavings = outflowGap;
+        portfolio = contributeToPortfolio(portfolio, outflowGap, inputs);
+      } else if (outflowGap < 0) {
+        withdrawnSavings = -outflowGap;
+        portfolio = withdrawFromPortfolio(portfolio, withdrawnSavings);
+      }
+    } else if (outflowGap > 0) {
+      investedSavings = outflowGap;
+      portfolio = contributeToPortfolio(portfolio, outflowGap, inputs);
     }
 
-    const taxableGain = Math.max(0, taxablePortfolioValue - taxableBasis);
-    const capitalGainsTax =
-      taxableGain *
-      (inputs.taxes.longTermCapitalGainsRate +
-        inputs.taxes.stateCapitalGainsRate +
-        inputs.taxes.niitRate);
-    const portfolioValue = taxablePortfolioValue + taxAdvantagedPortfolioValue;
-    const liquidationValue = portfolioValue - capitalGainsTax;
+    const snapshot = snapshotPortfolio(portfolio, inputs);
 
     rows.push({
       year,
@@ -56,16 +57,19 @@ export function calculateRentPath(
       cumulativeOutflow,
       outflowGap,
       investedSavings,
+      withdrawnSavings,
       initialInvestment,
-      taxablePortfolioValue,
-      taxAdvantagedPortfolioValue,
-      portfolioValue,
-      liquidationValue,
-      taxableBasis,
-      capitalGainsTax,
-      netEconomicResult: liquidationValue - cumulativeOutflow,
+      taxablePortfolioValue: snapshot.taxablePortfolioValue,
+      taxAdvantagedPortfolioValue: snapshot.taxAdvantagedPortfolioValue,
+      portfolioValue: snapshot.portfolioValue,
+      liquidationValue: snapshot.liquidationValue,
+      taxableBasis: snapshot.taxableBasis,
+      capitalGainsTax: snapshot.capitalGainsTax,
+      netEconomicResult: snapshot.liquidationValue - cumulativeOutflow,
     });
   }
 
   return rows;
 }
+
+export { calculateRentAnnualOutflow };

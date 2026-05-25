@@ -69,6 +69,8 @@ export interface ScenarioInputs {
     expectedAnnualReturn: number;
     annualTaxDrag: number;
     taxAdvantagedAccountPercent: number;
+    equalizeRenterCashflow: boolean;
+    investBuyerCashflowSavings: boolean;
   };
   taxes: TaxAssumptions;
   macro: {
@@ -126,6 +128,9 @@ export interface BuyYearResult {
   sellingCosts: number;
   capitalGainsTax: number;
   saleProceeds: number;
+  buyerCashflowSavings: number;
+  sidePortfolioValue: number;
+  sidePortfolioLiquidation: number;
   netEconomicResult: number;
 }
 
@@ -137,6 +142,7 @@ export interface RentYearResult {
   cumulativeOutflow: number;
   outflowGap: number;
   investedSavings: number;
+  withdrawnSavings: number;
   initialInvestment: number;
   taxablePortfolioValue: number;
   taxAdvantagedPortfolioValue: number;

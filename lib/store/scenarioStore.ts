@@ -75,8 +75,16 @@ interface ScenarioStoreState {
   ) => void;
   setRent: (field: keyof ScenarioInputs["rent"], value: number, scenarioId?: ScenarioId) => void;
   setInvestment: (
-    field: keyof ScenarioInputs["investment"],
+    field: Exclude<
+      keyof ScenarioInputs["investment"],
+      "equalizeRenterCashflow" | "investBuyerCashflowSavings"
+    >,
     value: number,
+    scenarioId?: ScenarioId,
+  ) => void;
+  setInvestmentAssumption: (
+    field: "equalizeRenterCashflow" | "investBuyerCashflowSavings",
+    value: boolean,
     scenarioId?: ScenarioId,
   ) => void;
   setFilingStatus: (filingStatus: FilingStatus, scenarioId?: ScenarioId) => void;
@@ -128,6 +136,8 @@ export const defaultScenario: ScenarioInputs = {
     expectedAnnualReturn: 0.07,
     annualTaxDrag: 0.005,
     taxAdvantagedAccountPercent: 0,
+    equalizeRenterCashflow: false,
+    investBuyerCashflowSavings: false,
   },
   taxes: deriveTax("single", DEFAULT_INCOME, "NY"),
   macro: {
@@ -377,6 +387,11 @@ export const useScenarioStore = create<ScenarioStoreState>()(
           rent: { ...scenario.rent, [field]: value },
         }))),
       setInvestment: (field, value, scenarioId) =>
+        set((state) => updateScenario(state, scenarioId, (scenario) => ({
+          ...scenario,
+          investment: { ...scenario.investment, [field]: value },
+        }))),
+      setInvestmentAssumption: (field, value, scenarioId) =>
         set((state) => updateScenario(state, scenarioId, (scenario) => ({
           ...scenario,
           investment: { ...scenario.investment, [field]: value },

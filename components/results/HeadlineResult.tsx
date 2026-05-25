@@ -3,6 +3,7 @@
 import type { ScenarioResults } from "@/lib/engine";
 import { useScenarioStore, type DisplayMode } from "@/lib/store/scenarioStore";
 import { NumberSliderInput } from "@/components/inputs/NumberSliderInput";
+import Link from "next/link";
 import { formatCurrency } from "./formatters";
 
 interface HeadlineResultProps {
@@ -21,7 +22,7 @@ export function HeadlineResult({ results, displayMode, label }: HeadlineResultPr
   return (
     <section className="operator-panel rounded-sm p-6">
       <p className="operator-kicker">
-        SYS.STATUS: {label ?? "headline result"}
+        SYS.STATUS: {label ?? "cost-adjusted net position"}
       </p>
       <h2 className="operator-title mt-3 text-5xl leading-[0.92]">
         At year {headlineYear}, buying leaves you{" "}
@@ -31,21 +32,32 @@ export function HeadlineResult({ results, displayMode, label }: HeadlineResultPr
         {buyerWins ? "ahead" : "behind"} versus renting.
       </h2>
       <p className="mt-3 max-w-3xl text-sm text-muted-foreground">
-        Net cash position if you liquidate at this year: sale proceeds or
-        portfolio (after tax) minus cumulative operating housing costs to date.
-        Down payment, closing equity, and mortgage principal are excluded from
-        costs because they are recovered through the asset. Higher is better.
+        This is an{" "}
+        <span className="font-semibold text-foreground">
+          unrecoverable cost-adjusted net position
+        </span>
+        , not net worth at the horizon year. It measures what you keep after
+        liquidating (home sale or portfolio, after tax) minus housing costs you
+        cannot recover through those assets. Down payment, closing costs, and
+        mortgage principal are excluded from costs because they return through
+        home equity at sale.
+      </p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        <Link className="font-semibold text-primary hover:underline" href="/methodology">
+          Read the methodology
+        </Link>{" "}
+        for a full walkthrough of each path.
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         <Metric label="Break-even year" value={results.breakEvenYear ?? "None"} />
         <Metric
-          label="Buyer net result"
+          label="Buyer adjusted position"
           value={formatCurrency(
             displayMode === "real" ? row.realBuyerNetResult : row.buyerNetResult,
           )}
         />
         <Metric
-          label="Renter net result"
+          label="Renter adjusted position"
           value={formatCurrency(
             displayMode === "real" ? row.realRenterNetResult : row.renterNetResult,
           )}

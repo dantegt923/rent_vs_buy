@@ -41,6 +41,8 @@ export function baseScenario(overrides: Partial<ScenarioInputs> = {}): ScenarioI
       expectedAnnualReturn: 0.07,
       annualTaxDrag: 0.005,
       taxAdvantagedAccountPercent: 0,
+      equalizeRenterCashflow: false,
+      investBuyerCashflowSavings: false,
     },
     taxes: {
       filingStatus: "single",

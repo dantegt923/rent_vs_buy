@@ -1,4 +1,11 @@
 import { buildAmortizationSchedule } from "./amortization";
+import {
+  contributeToPortfolio,
+  createPortfolio,
+  growPortfolio,
+  snapshotPortfolio,
+} from "./portfolio";
+import { calculateRentAnnualOutflow } from "./rentHelpers";
 import type {
   AnnualAmortizationRow,
   BuyYearResult,
@@ -55,6 +62,9 @@ export function calculateBuyPath(inputs: ScenarioInputs): BuyYearResult[] {
   const closingCosts = calculateClosingCosts(inputs);
   let cumulativeOutflow = downPayment + closingCosts;
   let cumulativePrincipalPaid = 0;
+  let sidePortfolio = createPortfolio(0);
+  const investBuyerCashflowSavings =
+    inputs.investment.investBuyerCashflowSavings ?? false;
   const rows: BuyYearResult[] = [];
 
   for (let year = 1; year <= inputs.horizonYears; year += 1) {
@@ -103,6 +113,23 @@ export function calculateBuyPath(inputs: ScenarioInputs): BuyYearResult[] {
     cumulativeOutflow += annualOutflow;
     cumulativePrincipalPaid += mortgagePrincipalPaid;
 
+    sidePortfolio = growPortfolio(sidePortfolio, inputs);
+
+    const renterAnnualOutflow = calculateRentAnnualOutflow(inputs, year);
+    const buyerCashflowSavings = investBuyerCashflowSavings
+      ? Math.max(0, renterAnnualOutflow - annualOutflow)
+      : 0;
+
+    if (buyerCashflowSavings > 0) {
+      sidePortfolio = contributeToPortfolio(
+        sidePortfolio,
+        buyerCashflowSavings,
+        inputs,
+      );
+    }
+
+    const sideSnapshot = snapshotPortfolio(sidePortfolio, inputs);
+
     const sellingCosts = homeValue * inputs.appreciation.sellingCostRate;
     const capitalGainsTax = calculateHomeSaleCapitalGainsTax(homeValue, inputs);
     const saleProceeds = Math.max(
@@ -130,8 +157,12 @@ export function calculateBuyPath(inputs: ScenarioInputs): BuyYearResult[] {
       sellingCosts,
       capitalGainsTax,
       saleProceeds,
+      buyerCashflowSavings,
+      sidePortfolioValue: sideSnapshot.portfolioValue,
+      sidePortfolioLiquidation: sideSnapshot.liquidationValue,
       netEconomicResult: calculateBuyerNetEconomicResult(
         saleProceeds,
+        sideSnapshot.liquidationValue,
         cumulativeOutflow,
         downPayment,
         cumulativePrincipalPaid,
@@ -183,6 +214,7 @@ export function calculateHomeSaleCapitalGainsTax(
 
 function calculateBuyerNetEconomicResult(
   saleProceeds: number,
+  sidePortfolioLiquidation: number,
   cumulativeOutflow: number,
   downPayment: number,
   cumulativePrincipalPaid: number,
@@ -190,7 +222,7 @@ function calculateBuyerNetEconomicResult(
   const cumulativeOperatingOutflow =
     cumulativeOutflow - downPayment - cumulativePrincipalPaid;
 
-  return saleProceeds - cumulativeOperatingOutflow;
+  return saleProceeds + sidePortfolioLiquidation - cumulativeOperatingOutflow;
 }
 
 function calculateMaintenance(

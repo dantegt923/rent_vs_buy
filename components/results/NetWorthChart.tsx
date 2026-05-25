@@ -78,11 +78,12 @@ export function NetWorthChart({
         <div>
           <p className="operator-kicker">Unified_Spectrum</p>
           <h2 className="operator-title mt-1 text-3xl">
-            Net Economic Outcome: Buy vs. Rent
+            Cost-Adjusted Net Position: Buy vs. Rent
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Costs minus asset recovery on each path. Renter portfolio only receives
-            savings when owning costs more than renting.
+            Unrecoverable housing costs minus asset recovery on each path—not
+            end-state net worth. Optional cashflow assumptions in Investment
+            can shift the renter or buyer line when toggled on.
           </p>
         </div>
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
@@ -113,7 +114,7 @@ export function NetWorthChart({
               dataKey="buyer"
               dot={false}
               isAnimationActive={false}
-              name={compareResults ? "A buyer net result" : "Buyer net result"}
+              name={compareResults ? "A buyer adjusted position" : "Buyer adjusted position"}
               stroke="hsl(var(--primary))"
               strokeWidth={3}
               type="monotone"
@@ -123,7 +124,7 @@ export function NetWorthChart({
               dataKey="renter"
               dot={false}
               isAnimationActive={false}
-              name={compareResults ? "A renter net result" : "Renter net result"}
+              name={compareResults ? "A renter adjusted position" : "Renter adjusted position"}
               stroke="hsl(var(--accent))"
               strokeWidth={3}
               type="monotone"
@@ -135,7 +136,7 @@ export function NetWorthChart({
                   dataKey="buyerB"
                   dot={false}
                   isAnimationActive={false}
-                  name="B buyer net result"
+                  name="B buyer adjusted position"
                   stroke="hsl(var(--primary) / 0.55)"
                   strokeDasharray="8 6"
                   strokeWidth={3}
@@ -146,7 +147,7 @@ export function NetWorthChart({
                   dataKey="renterB"
                   dot={false}
                   isAnimationActive={false}
-                  name="B renter net result"
+                  name="B renter adjusted position"
                   stroke="hsl(var(--accent) / 0.55)"
                   strokeDasharray="8 6"
                   strokeWidth={3}
