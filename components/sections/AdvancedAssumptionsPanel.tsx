@@ -34,9 +34,9 @@ export function AdvancedAssumptionsPanel({ scenarioId }: { scenarioId: ScenarioI
       >
         <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-4 sm:px-5">
           <div className="min-w-0">
-            <p className="de-kicker">Optional</p>
+            <p className="de-kicker">{APP_LABELS.advancedAssumptionsKicker}</p>
             <h2 className="de-headline mt-1 text-xl uppercase sm:text-2xl">
-              {APP_LABELS.assumptionsTitle}
+              {APP_LABELS.advancedAssumptionsTitle}
             </h2>
           </div>
           <AssumptionsCollapseToggle />

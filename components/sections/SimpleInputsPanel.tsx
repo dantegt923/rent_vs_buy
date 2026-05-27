@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { NumberSliderInput } from "@/components/inputs/NumberSliderInput";
+import { DownPaymentInput } from "@/components/inputs/DownPaymentInput";
 import { cn } from "@/lib/utils";
 import { APP_LABELS } from "@/lib/ui/labels";
 import { type ScenarioId, useScenarioStore } from "@/lib/store/scenarioStore";
@@ -60,70 +61,11 @@ export function SimpleInputsPanel({ scenarioId }: { scenarioId: ScenarioId }) {
         {isMortgage ? (
           <>
             <InputCard className="sm:col-span-2 lg:col-span-1">
-              <div className="space-y-3">
-                <div className="flex rounded-sm border border-primary/15 bg-background/45 p-1 text-sm">
-                  <button
-                    className={`flex-1 rounded-sm px-3 py-1.5 text-xs font-bold uppercase tracking-[0.1em] ${
-                      downPayment.kind === "percent" ? "bg-primary text-primary-foreground" : ""
-                    }`}
-                    type="button"
-                    onClick={() =>
-                      setDownPayment(
-                        {
-                          kind: "percent",
-                          value:
-                            downPayment.kind === "percent"
-                              ? downPayment.value
-                              : downPayment.value / scenario.property.homePrice,
-                        },
-                        scenarioId,
-                      )
-                    }
-                  >
-                    Percent
-                  </button>
-                  <button
-                    className={`flex-1 rounded-sm px-3 py-1.5 text-xs font-bold uppercase tracking-[0.1em] ${
-                      downPayment.kind === "amount" ? "bg-primary text-primary-foreground" : ""
-                    }`}
-                    type="button"
-                    onClick={() =>
-                      setDownPayment(
-                        {
-                          kind: "amount",
-                          value:
-                            downPayment.kind === "amount"
-                              ? downPayment.value
-                              : downPayment.value * scenario.property.homePrice,
-                        },
-                        scenarioId,
-                      )
-                    }
-                  >
-                    Dollars
-                  </button>
-                </div>
-                <NumberSliderInput
-                  format={downPayment.kind === "percent" ? "percent" : "currency"}
-                  label="Down payment"
-                  max={downPayment.kind === "percent" ? 100 : scenario.property.homePrice}
-                  min={0}
-                  onChange={(value) =>
-                    setDownPayment(
-                      downPayment.kind === "percent"
-                        ? { kind: "percent", value: value / 100 }
-                        : { kind: "amount", value },
-                      scenarioId,
-                    )
-                  }
-                  step={downPayment.kind === "percent" ? 1 : 1_000}
-                  value={
-                    downPayment.kind === "percent"
-                      ? downPayment.value * 100
-                      : downPayment.value
-                  }
-                />
-              </div>
+              <DownPaymentInput
+                downPayment={downPayment}
+                homePrice={scenario.property.homePrice}
+                onChange={(value) => setDownPayment(value, scenarioId)}
+              />
             </InputCard>
             <InputCard>
               <NumberSliderInput

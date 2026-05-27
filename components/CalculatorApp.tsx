@@ -6,6 +6,7 @@ import { HeadlineResult } from "@/components/results/HeadlineResult";
 import { NetWorthChart } from "@/components/results/NetWorthChart";
 import { YearByYearTable } from "@/components/results/YearByYearTable";
 import { SettingsMenu } from "@/components/scenario/SettingsMenu";
+import { ScenarioToolsMenu } from "@/components/scenario/ScenarioToolsMenu";
 import { AdvancedAssumptionsPanel } from "@/components/sections/AdvancedAssumptionsPanel";
 import { SimpleInputsPanel } from "@/components/sections/SimpleInputsPanel";
 import { APP_LABELS } from "@/lib/ui/labels";
@@ -18,7 +19,6 @@ export function CalculatorApp() {
   const compareMode = useScenarioStore((state) => state.compareMode);
   const displayMode = useScenarioStore((state) => state.displayMode);
   const themeMode = useScenarioStore((state) => state.themeMode);
-  const setCompareMode = useScenarioStore((state) => state.setCompareMode);
   const results = useMemo(() => calculate(scenario), [scenario]);
   const resultsA = useMemo(() => calculate(scenarios.A), [scenarios.A]);
   const resultsB = useMemo(() => calculate(scenarios.B), [scenarios.B]);
@@ -40,17 +40,7 @@ export function CalculatorApp() {
               </h1>
             </div>
             <div className="flex items-center gap-2 sm:justify-end sm:gap-3">
-              <button
-                className={`rounded-sm border border-primary/25 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] shadow-[0_0_24px_hsl(var(--primary)/0.08)] ${
-                  compareMode
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card/80 text-primary"
-                }`}
-                type="button"
-                onClick={() => setCompareMode(!compareMode)}
-              >
-                {APP_LABELS.compareScenarios}
-              </button>
+              <ScenarioToolsMenu />
               <SettingsMenu />
             </div>
           </div>

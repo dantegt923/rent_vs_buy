@@ -17,7 +17,7 @@ export function OutcomeModeToggle() {
       />
       <ToggleButton
         active={outcomeMode === "costAdjusted"}
-        label={APP_LABELS.financialOutcome}
+        label={APP_LABELS.netResult}
         value="costAdjusted"
         onClick={setOutcomeMode}
       />

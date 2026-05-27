@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Methodology",
   description:
-    "How the rent vs. buy model computes net worth, financial outcome, break-even, and optional investment assumptions.",
+    "How the rent vs. buy model computes net worth, net result, break-even, and optional investment assumptions.",
 };
 
 export default function MethodologyPage() {
@@ -29,9 +29,9 @@ export default function MethodologyPage() {
             </h2>
             <p>
               The default view is <strong className="text-foreground">net worth</strong> at
-              the comparison year: what you would have if you liquidated on each path. Switch
-              to <strong className="text-foreground">financial outcome</strong> (formerly
-              cost-adjusted net position) in Settings for the unrecoverable-cost view.
+              your planned stay. Switch to <strong className="text-foreground">net result</strong>{" "}
+              (formerly cost-adjusted net position) in Display settings for the
+              unrecoverable-cost view.
             </p>
           </section>
 
@@ -39,9 +39,9 @@ export default function MethodologyPage() {
             <h2 className="de-headline text-2xl text-foreground">Simple vs. advanced inputs</h2>
             <p>
               Core inputs—ZIP, home price, rent, down payment, mortgage rate, and years
-              staying—are always visible. Growth rates and other details live in the
-              collapsed <em>Your assumptions</em> accordion (home appreciation under
-              Property, rent growth under Rent).
+              staying—are always visible. Growth rates and other details live in the collapsed{" "}
+              <em>Advanced — Assumptions</em> accordion (home appreciation under Property, rent
+              growth under Rent).
             </p>
           </section>
 
@@ -62,50 +62,34 @@ export default function MethodologyPage() {
               along the way.
             </p>
             <div className="rounded-sm border border-border bg-secondary/40 p-4 font-mono text-xs text-foreground">
-              If buying = sale proceeds (+ optional side portfolio)
+              Net worth if you buy = sale proceeds (+ optional side portfolio)
             </div>
             <div className="rounded-sm border border-border bg-secondary/40 p-4 font-mono text-xs text-foreground">
-              If renting = portfolio liquidation (after tax)
+              Net worth if you rent = portfolio liquidation (after tax)
             </div>
           </section>
 
           <section className="space-y-3">
-            <h2 className="de-headline text-2xl text-foreground">
-              Financial outcome (optional)
-            </h2>
+            <h2 className="de-headline text-2xl text-foreground">Net result (optional)</h2>
             <p>
               Liquidation value minus unrecoverable housing costs. Down payment, closing
               costs, and mortgage principal are excluded from costs because they return through
               home equity at sale.
             </p>
             <div className="rounded-sm border border-border bg-secondary/40 p-4 font-mono text-xs text-foreground">
-              If buying = sale proceeds (+ side portfolio) − cumulative operating costs
+              Net result if you buy = sale proceeds (+ side portfolio) − cumulative operating costs
             </div>
             <div className="rounded-sm border border-border bg-secondary/40 p-4 font-mono text-xs text-foreground">
-              If renting = portfolio liquidation (after tax) − cumulative rent and insurance
+              Net result if you rent = portfolio liquidation (after tax) − cumulative rent and insurance
             </div>
           </section>
 
           <section className="space-y-3">
             <h2 className="de-headline text-2xl text-foreground">Break-even rule</h2>
             <p>
-              The headline and chart anchor on a single comparison year chosen by this
-              hierarchy (always resolves to a year):
+              The headline uses your planned stay as the primary decision year. When paths
+              cross, a secondary line shows when buying becomes better.
             </p>
-            <ol className="list-decimal space-y-2 pl-5">
-              <li>
-                <strong className="text-foreground">Durable break-even</strong> — buying
-                pulls ahead and stays ahead through the horizon.
-              </li>
-              <li>
-                <strong className="text-foreground">First year buying leads</strong> — first
-                crossover toward buying when durability fails.
-              </li>
-              <li>
-                <strong className="text-foreground">Closest to even</strong> — smallest
-                absolute gap when buying never durably leads.
-              </li>
-            </ol>
           </section>
 
           <section className="space-y-3">

@@ -273,8 +273,8 @@ function ChartTooltip({
   return (
     <div className="rounded-sm border border-primary/30 bg-card/95 p-3 text-sm shadow-[0_0_28px_hsl(var(--primary)/0.16)]">
       <p className="font-semibold">Year {label}</p>
-      <p>{compareMode ? "A buyer" : APP_LABELS.ifBuying}: {formatCurrency(buyer)}</p>
-      <p>{compareMode ? "A renter" : APP_LABELS.ifRenting}: {formatCurrency(renter)}</p>
+      <p>{compareMode ? "A buyer" : APP_LABELS.netWorthIfBuy}: {formatCurrency(buyer)}</p>
+      <p>{compareMode ? "A renter" : APP_LABELS.netWorthIfRent}: {formatCurrency(renter)}</p>
       <p className="font-semibold">Delta: {formatCurrency(delta)}</p>
       {buyerB !== undefined && renterB !== undefined ? (
         <>
