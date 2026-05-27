@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Settings } from "lucide-react";
+import { InfoTooltip } from "@/components/inputs/InfoTooltip";
 import { DisplayModeToggle } from "@/components/scenario/DisplayModeToggle";
 import { OutcomeModeToggle } from "@/components/scenario/OutcomeModeToggle";
 import { ThemeToggle } from "@/components/scenario/ThemeToggle";
@@ -27,7 +28,10 @@ export function SettingsMenu() {
         <div className="fixed inset-x-4 top-20 z-50 max-h-[calc(100vh-6rem)] overflow-auto rounded-sm border border-primary/25 bg-card/95 p-4 shadow-[0_0_32px_hsl(var(--primary)/0.18)] backdrop-blur sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-80">
           <p className="de-kicker">{APP_LABELS.displaySettings}</p>
           <div className="mt-4 space-y-4">
-            <SettingGroup label="Display dollars">
+            <SettingGroup
+              label="Display dollars"
+              tooltip="Nominal shows dollars before inflation—the face value at each year. Real adjusts for inflation so you can compare purchasing power over time."
+            >
               <DisplayModeToggle />
             </SettingGroup>
             <SettingGroup label="Theme">
@@ -45,16 +49,21 @@ export function SettingsMenu() {
 
 function SettingGroup({
   label,
+  tooltip,
   children,
 }: {
   label: string;
+  tooltip?: string;
   children: ReactNode;
 }) {
   return (
     <div className="space-y-2">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-        {label}
-      </p>
+      <div className="flex items-center gap-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          {label}
+        </p>
+        {tooltip ? <InfoTooltip text={tooltip} /> : null}
+      </div>
       {children}
     </div>
   );
