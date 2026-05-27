@@ -4,6 +4,7 @@ import type { ScenarioResults } from "@/lib/engine";
 import {
   buildHeadlineParts,
   getBreakEvenMetricLabel,
+  getComparisonValues,
   getComparisonYear,
   OUTCOME_COPY,
 } from "@/lib/results/outcomeDisplay";
@@ -27,37 +28,32 @@ export function HeadlineResult({
   const copy = OUTCOME_COPY[outcomeMode];
   const { values, kind } = comparison;
   const headline = buildHeadlineParts(comparison, outcomeMode);
-  const amountMatch = headline.amountLine.match(/\$[\d,]+/);
-  const amountText = amountMatch?.[0] ?? "";
-  const amountSuffix = headline.amountLine.slice(
-    headline.amountLine.indexOf(amountText) + amountText.length,
+  const stayValues = getComparisonValues(
+    results.comparison[yearsStaying - 1],
+    displayMode,
+    outcomeMode,
   );
-  const amountPrefix = headline.amountLine.slice(
-    0,
-    headline.amountLine.indexOf(amountText),
-  );
+  const winnerClass = headline.buyerWins
+    ? "text-primary"
+    : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]";
+  const headlineClass =
+    "de-headline text-2xl leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] lg:leading-tight";
 
   return (
     <section className="de-panel rounded-sm p-4 sm:p-6 lg:p-8">
       {label ? (
         <p className="de-kicker">{label}</p>
       ) : null}
-      <div className="mt-2 space-y-3">
-        <p className="text-base font-medium leading-relaxed text-muted-foreground sm:text-lg">
-          {headline.contextLine}
-        </p>
-        <h2 className="de-headline text-2xl leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] lg:leading-tight">
-          {amountPrefix}
-          <span
-            className={
-              headline.buyerWins
-                ? "text-primary"
-                : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]"
-            }
-          >
-            {amountText}
-          </span>
-          {amountSuffix}
+      <div className="mt-2 space-y-2 sm:space-y-3">
+        <h2 className={headlineClass}>
+          {headline.contextBefore}
+          <span className={winnerClass}>{headline.contextYear}</span>
+          {headline.contextAfter}
+        </h2>
+        <h2 className={headlineClass}>
+          {headline.amountBefore}
+          <span className="text-primary">{formatCurrency(headline.amount)}</span>
+          {headline.amountAfter}
         </h2>
       </div>
       <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">
@@ -72,7 +68,8 @@ export function HeadlineResult({
         <Metric label={copy.renterMetric} value={formatCurrency(values.renter)} />
       </div>
       <p className="mt-4 text-xs text-muted-foreground">
-        Planned stay: {yearsStaying} years · Horizon: {results.inputs.horizonYears} years
+        Planned stay: {yearsStaying} years · Buying: {formatCurrency(stayValues.buyer)} · Renting:{" "}
+        {formatCurrency(stayValues.renter)}
       </p>
     </section>
   );

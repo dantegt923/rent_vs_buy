@@ -55,9 +55,12 @@ export interface ComparisonYearContext {
 }
 
 export interface HeadlineParts {
-  contextLine: string;
-  amountLine: string;
+  contextBefore: string;
+  contextYear: number;
+  contextAfter: string;
+  amountBefore: string;
   amount: number;
+  amountAfter: string;
   buyerWins: boolean;
 }
 
@@ -127,30 +130,39 @@ export function buildHeadlineParts(
   const buyerWins = values.delta >= 0;
   const direction = buyerWins ? "ahead" : "behind";
   const framing = OUTCOME_COPY[outcomeMode].headlineFraming;
-  const formattedAmount = `$${formatPlainCurrency(amount)}`;
+  const amountAfter = ` ${direction} on ${framing}.`;
 
   if (kind === "durable") {
     return {
-      contextLine: `Break-even is year ${context.breakEven.year}.`,
-      amountLine: `At that point, buying leaves you ${formattedAmount} ${direction} on ${framing}.`,
+      contextBefore: "Break-even is year ",
+      contextYear: context.breakEven.year,
+      contextAfter: ".",
+      amountBefore: "At that point, buying leaves you ",
       amount,
+      amountAfter,
       buyerWins,
     };
   }
 
   if (kind === "firstIntersection") {
     return {
-      contextLine: `Buying leads starting in year ${context.breakEven.year}.`,
-      amountLine: `At that point, buying leaves you ${formattedAmount} ${direction} on ${framing}.`,
+      contextBefore: "Buying leads starting in year ",
+      contextYear: context.breakEven.year,
+      contextAfter: ".",
+      amountBefore: "At that point, buying leaves you ",
       amount,
+      amountAfter,
       buyerWins,
     };
   }
 
   return {
-    contextLine: `The paths are closest in year ${context.breakEven.year}.`,
-    amountLine: `At that point, buying leaves you ${formattedAmount} ${direction} on ${framing}.`,
+    contextBefore: "The paths are closest in year ",
+    contextYear: context.breakEven.year,
+    contextAfter: ".",
+    amountBefore: "At that point, buying leaves you ",
     amount,
+    amountAfter,
     buyerWins,
   };
 }
@@ -161,7 +173,7 @@ export function buildHeadlineCopy(
   outcomeMode: OutcomeMode,
 ): string {
   const parts = buildHeadlineParts(context, outcomeMode);
-  return `${parts.contextLine} ${parts.amountLine}`;
+  return `${parts.contextBefore}${parts.contextYear}${parts.contextAfter} ${parts.amountBefore}${parts.amountAfter}`;
 }
 
 function formatPlainCurrency(value: number): string {

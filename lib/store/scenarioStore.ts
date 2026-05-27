@@ -458,6 +458,19 @@ export const useScenarioStore = create<ScenarioStoreState>()(
         themeMode: state.themeMode,
         showAdvancedAssumptions: state.showAdvancedAssumptions,
       }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<ScenarioStoreState>;
+
+        return {
+          ...currentState,
+          ...persisted,
+          scenario: normalizeScenario(persisted.scenario ?? currentState.scenario),
+          scenarios: {
+            A: normalizeScenario(persisted.scenarios?.A ?? currentState.scenarios.A),
+            B: normalizeScenario(persisted.scenarios?.B ?? currentState.scenarios.B),
+          },
+        };
+      },
     },
   ),
 );
@@ -490,9 +503,10 @@ function replaceScenario(
   scenarioId: ScenarioId,
   scenario: ScenarioInputs,
 ): Partial<ScenarioStoreState> {
+  const normalizedScenario = normalizeScenario(scenario);
   const scenarios = {
     ...state.scenarios,
-    [scenarioId]: scenario,
+    [scenarioId]: normalizedScenario,
   };
 
   return {
@@ -531,6 +545,16 @@ function getLoanTermYears(scenario: ScenarioInputs): number {
   return scenario.property.purchaseMode.kind === "mortgage"
     ? scenario.property.purchaseMode.loanTermYears
     : 30;
+}
+
+function normalizeScenario(scenario: ScenarioInputs): ScenarioInputs {
+  const horizonYears = getLoanTermYears(scenario);
+
+  return {
+    ...scenario,
+    horizonYears,
+    saleYear: clampYear(scenario.saleYear, horizonYears),
+  };
 }
 
 function clampYear(year: number, horizonYears: number): number {

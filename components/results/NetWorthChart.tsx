@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import {
   CartesianGrid,
   Label,
-  Legend,
   Line,
   LineChart,
   ReferenceLine,
@@ -15,7 +14,6 @@ import {
 } from "recharts";
 import type { ScenarioResults } from "@/lib/engine";
 import {
-  getBreakEvenMetricLabel,
   getComparisonValues,
   getComparisonYear,
   OUTCOME_COPY,
@@ -59,6 +57,7 @@ export function NetWorthChart({
   const data: ChartRow[] = useMemo(
     () =>
       results.comparison
+        .slice(0, horizonYears)
         .map((row) => {
           const values = getComparisonValues(row, displayMode, outcomeMode);
 
@@ -85,12 +84,11 @@ export function NetWorthChart({
             deltaB: valuesB.delta,
           };
         }),
-    [compareResults, displayMode, outcomeMode, results.comparison],
+    [compareResults, displayMode, horizonYears, outcomeMode, results.comparison],
   );
 
   const buyerLineName = compareResults ? `${APP_LABELS.scenarioA} · ${copy.buyerLine}` : copy.buyerLine;
   const renterLineName = compareResults ? `${APP_LABELS.scenarioA} · ${copy.renterLine}` : copy.renterLine;
-  const breakEvenLabel = getBreakEvenMetricLabel(comparison.kind);
 
   return (
     <section className="de-panel rounded-sm p-4 sm:p-5">
@@ -104,16 +102,6 @@ export function NetWorthChart({
           {displayMode === "real" ? "Inflation-adjusted" : "Nominal"} dollars
         </p>
       </div>
-      <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em]">
-        <span className="inline-flex items-center gap-2 text-muted-foreground">
-          <span className="h-0 w-5 border-t-2 border-dashed" style={{ borderColor: BREAK_EVEN_COLOR }} />
-          {breakEvenLabel} · year {breakEvenYear}
-        </span>
-        <span className="inline-flex items-center gap-2 text-muted-foreground">
-          <span className="h-0 w-5 border-t-2 border-dashed" style={{ borderColor: YEARS_STAYING_COLOR }} />
-          {APP_LABELS.yearsStaying} · year {yearsStaying}
-        </span>
-      </div>
       <div className="h-[240px] min-h-[240px] w-full min-w-0 sm:h-[300px] lg:h-[360px]">
         <ResponsiveContainer height="100%" width="100%">
           <LineChart
@@ -121,14 +109,18 @@ export function NetWorthChart({
             margin={{ bottom: 8, left: 12, right: 28, top: 28 }}
           >
             <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
-            <XAxis dataKey="year" tickLine={false} />
+            <XAxis
+              dataKey="year"
+              domain={[1, horizonYears]}
+              tickLine={false}
+              type="number"
+            />
             <YAxis
               tickFormatter={formatCompactCurrency}
               tickLine={false}
               width={72}
             />
             <Tooltip content={<ChartTooltip compareMode={Boolean(compareResults)} />} />
-            <Legend />
             <ReferenceLine
               stroke={BREAK_EVEN_COLOR}
               strokeDasharray="6 4"
@@ -160,7 +152,7 @@ export function NetWorthChart({
                     fill={YEARS_STAYING_COLOR}
                     horizonYears={horizonYears}
                     offsetY={markersOverlap ? 16 : 0}
-                    text={`Stay ${yearsStaying}y`}
+                    text={`Year ${yearsStaying}`}
                     year={yearsStaying}
                   />
                 }
