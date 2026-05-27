@@ -21,7 +21,7 @@ export function TaxSection({ scenarioId }: { scenarioId: ScenarioId }) {
       <label className="block space-y-2">
         <span className="text-sm font-semibold">Filing status</span>
         <select
-          className="w-full rounded-md border bg-card px-3 py-2 text-sm outline-none ring-primary/20 focus:ring-4"
+          className="de-select w-full rounded-md border bg-card px-3 py-2 text-sm outline-none ring-primary/20 focus:ring-4"
           value={taxes.filingStatus}
           onChange={(event) =>
             setFilingStatus(event.target.value as FilingStatus, scenarioId)

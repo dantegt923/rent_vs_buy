@@ -75,22 +75,19 @@ export function HeadlineResult({
         {copy.description}
       </p>
 
-      <div className="mt-6 space-y-3">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Metric
-            label={copy.buyerMetric}
-            prominent
-            value={formatCurrency(stayValues.buyer)}
-          />
-          <Metric
-            label={copy.renterMetric}
-            prominent
-            value={formatCurrency(stayValues.renter)}
-          />
-        </div>
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Metric
+          label={copy.buyerMetric}
+          prominent
+          value={formatCurrency(stayValues.buyer)}
+        />
+        <Metric
+          label={copy.renterMetric}
+          prominent
+          value={formatCurrency(stayValues.renter)}
+        />
         <Metric
           label={getBreakEvenMetricLabel(comparison.kind)}
-          subtle
           value={comparison.breakEven.year}
         />
       </div>
@@ -102,31 +99,29 @@ function Metric({
   label,
   value,
   prominent = false,
-  subtle = false,
 }: {
   label: string;
   value: string | number;
   prominent?: boolean;
-  subtle?: boolean;
 }) {
   return (
     <div
-      className={`rounded-sm border p-3 ${
+      className={`min-w-0 rounded-sm border p-3 ${
         prominent
           ? "border-primary/25 bg-secondary/70"
-          : "border-primary/10 bg-secondary/35"
-      } ${subtle ? "max-w-xs" : ""}`}
+          : "border-primary/15 bg-secondary/50"
+      }`}
     >
       <p
-        className={`font-bold uppercase tracking-[0.26em] text-muted-foreground ${
-          prominent ? "text-[11px]" : "text-[10px]"
+        className={`font-bold uppercase tracking-[0.18em] text-muted-foreground sm:tracking-[0.22em] ${
+          prominent ? "text-[10px] sm:text-[11px]" : "text-[10px]"
         }`}
       >
         {label}
       </p>
       <p
-        className={`mt-1 font-serif font-bold tabular-nums ${
-          prominent ? "text-3xl sm:text-4xl" : "text-xl sm:text-2xl"
+        className={`mt-1 truncate font-serif font-bold tabular-nums ${
+          prominent ? "text-2xl sm:text-3xl" : "text-2xl sm:text-3xl"
         }`}
       >
         {value}

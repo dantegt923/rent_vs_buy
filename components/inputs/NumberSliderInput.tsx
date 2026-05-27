@@ -102,7 +102,7 @@ export function NumberSliderInput({
           ) : null}
           <input
             id={id}
-            className="w-24 bg-transparent text-right text-sm font-bold tabular-nums outline-none"
+            className="de-number-input w-24 bg-transparent text-right text-sm font-bold tabular-nums outline-none"
             inputMode="decimal"
             type="number"
             min={min}
