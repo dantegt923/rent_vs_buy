@@ -18,7 +18,7 @@ export function YearByYearTable({
   return (
     <details className="de-panel rounded-sm">
       <summary className="cursor-pointer list-none px-4 py-4 sm:px-5">
-        <p className="de-kicker">{"// "}Details</p>
+        <p className="de-kicker">Details</p>
         <h2 className="de-headline mt-1 text-2xl sm:text-3xl">
           Year-by-Year Output{label ? ` · ${label}` : ""}
         </h2>

@@ -38,8 +38,8 @@ interface ChartRow {
   deltaB?: number;
 }
 
-const BREAK_EVEN_COLOR = "hsl(var(--accent))";
-const YEARS_STAYING_COLOR = "hsl(210 18% 62%)";
+const BREAK_EVEN_COLOR = "hsl(210 18% 62%)";
+const YEARS_STAYING_COLOR = "hsl(var(--accent))";
 
 export function NetWorthChart({
   results,

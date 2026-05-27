@@ -27,7 +27,7 @@ export const OUTCOME_COPY: Record<OutcomeMode, OutcomeCopy> = {
       "Net result measures what you keep after liquidating (home sale or portfolio, after tax) minus housing costs you cannot recover through those assets. Down payment, closing costs, and mortgage principal are excluded from costs because they return through home equity at sale.",
     buyerMetric: APP_LABELS.netWorthIfBuy,
     renterMetric: APP_LABELS.netWorthIfRent,
-    chartTitle: APP_LABELS.chartTitle,
+    chartTitle: APP_LABELS.chartTitleResult,
     chartDescription:
       "Unrecoverable housing costs minus asset recovery on each path. Optional cashflow assumptions in Investment can shift the renter or buyer line when toggled on.",
     buyerLine: APP_LABELS.netWorthIfBuy,
@@ -39,7 +39,7 @@ export const OUTCOME_COPY: Record<OutcomeMode, OutcomeCopy> = {
       "Net worth at your planned stay if you liquidate at that point: estimated home sale proceeds plus any buyer side portfolio, versus the renter's portfolio after tax. It does not subtract cumulative housing costs paid along the way.",
     buyerMetric: APP_LABELS.netWorthIfBuy,
     renterMetric: APP_LABELS.netWorthIfRent,
-    chartTitle: APP_LABELS.chartTitle,
+    chartTitle: APP_LABELS.chartTitleWealth,
     chartDescription:
       "Liquidation value on each path at every year—home sale plus side portfolio for buyers, investment portfolio for renters.",
     buyerLine: APP_LABELS.netWorthIfBuy,
