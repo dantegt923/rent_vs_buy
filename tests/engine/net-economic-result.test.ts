@@ -26,7 +26,23 @@ describe("net economic result model", () => {
   });
 
   it("avoids post-payoff portfolio withdrawals when rent exceeds ownership costs", () => {
-    const results = calculate(baseScenario());
+    const results = calculate(
+      baseScenario({
+        horizonYears: 35,
+        property: {
+          ...baseScenario().property,
+          purchaseMode: {
+            kind: "mortgage",
+            downPayment: { kind: "percent", value: 0.2 },
+            mortgageRate: 0.07,
+            loanTermYears: 30,
+            pmiRate: 0.005,
+            extraMonthlyPayment: 0,
+            lumpSumPrepayments: [],
+          },
+        },
+      }),
+    );
     const portfolioGain30 =
       results.rentPath[29].portfolioValue - results.rentPath[28].portfolioValue;
     const portfolioGain31 =

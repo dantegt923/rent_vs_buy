@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_LABELS } from "@/lib/ui/labels";
 import { useScenarioStore, type OutcomeMode } from "@/lib/store/scenarioStore";
 
 export function OutcomeModeToggle() {
@@ -9,15 +10,15 @@ export function OutcomeModeToggle() {
   return (
     <div className="flex shrink-0 items-center rounded-sm border border-primary/25 bg-card/80 p-1 text-[10px] font-bold uppercase tracking-[0.12em] shadow-[0_0_24px_hsl(var(--primary)/0.08)] sm:text-xs sm:tracking-[0.16em]">
       <ToggleButton
-        active={outcomeMode === "costAdjusted"}
-        label="Cost-adjusted"
-        value="costAdjusted"
+        active={outcomeMode === "netWorth"}
+        label={APP_LABELS.netWorth}
+        value="netWorth"
         onClick={setOutcomeMode}
       />
       <ToggleButton
-        active={outcomeMode === "netWorth"}
-        label="Net worth"
-        value="netWorth"
+        active={outcomeMode === "costAdjusted"}
+        label={APP_LABELS.financialOutcome}
+        value="costAdjusted"
         onClick={setOutcomeMode}
       />
     </div>

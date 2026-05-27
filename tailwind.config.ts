@@ -10,6 +10,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        ink: "#0B0F14",
+        graphite: "#161C24",
+        slate: "#2A3441",
+        mist: "#C9D2DC",
+        paper: "#F7F9FB",
+        stone: "#EEF2F6",
+        signal: "#19C2D8",
+        electric: "#2F6BFF",
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -46,8 +56,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        serif: ["var(--font-display)", "Georgia", "serif"],
-        sans: ["var(--font-body)", "Arial", "sans-serif"],
+        sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "IBM Plex Serif", "Georgia", "serif"],
       },
     },
   },

@@ -1,11 +1,13 @@
 import { calculateBuyPath } from "./buyPath";
-import { comparePaths, findBreakEvenYear } from "./compare";
+import { comparePaths, resolveBreakEven } from "./compare";
 import { calculateRentPath } from "./rentPath";
 import type { ScenarioInputs, ScenarioResults } from "./types";
 
 export type {
   AmortizationSchedule,
   AnnualAmortizationRow,
+  BreakEvenKind,
+  BreakEvenResult,
   BuyYearResult,
   ComparisonYearResult,
   DownPaymentInput,
@@ -32,7 +34,13 @@ export {
   calculateInitialBuyerCashOutlay,
   calculateMortgageInterestTaxBenefit,
 } from "./buyPath";
-export { comparePaths, findBreakEvenYear } from "./compare";
+export {
+  comparePaths,
+  findBreakEvenYear,
+  getBreakEvenKindLabel,
+  resolveBreakEven,
+} from "./compare";
+export type { OutcomeComparisonMode } from "./compare";
 export { toNominalDollars, toRealDollars } from "./inflation";
 export { calculateRentPath } from "./rentPath";
 
@@ -48,8 +56,8 @@ export function calculate(inputs: ScenarioInputs): ScenarioResults {
   const buyPath = calculateBuyPath(inputs);
   const rentPath = calculateRentPath(inputs, buyPath);
   const comparison = comparePaths(buyPath, rentPath, inputs.macro.inflationRate);
-  const breakEvenYear = findBreakEvenYear(comparison, "costAdjusted");
-  const netWorthBreakEvenYear = findBreakEvenYear(comparison, "netWorth");
+  const breakEven = resolveBreakEven(comparison, "costAdjusted");
+  const netWorthBreakEven = resolveBreakEven(comparison, "netWorth");
   const saleYearResult = comparison[inputs.saleYear - 1];
 
   return {
@@ -57,8 +65,8 @@ export function calculate(inputs: ScenarioInputs): ScenarioResults {
     buyPath,
     rentPath,
     comparison,
-    breakEvenYear,
-    netWorthBreakEvenYear,
+    breakEven,
+    netWorthBreakEven,
     saleYearResult,
   };
 }

@@ -14,10 +14,12 @@ import {
 } from "recharts";
 import type { ScenarioResults } from "@/lib/engine";
 import {
-  getBreakEvenYear,
+  getBreakEvenMetricLabel,
   getComparisonValues,
+  getComparisonYear,
   OUTCOME_COPY,
 } from "@/lib/results/outcomeDisplay";
+import { APP_LABELS } from "@/lib/ui/labels";
 import { useScenarioStore, type DisplayMode } from "@/lib/store/scenarioStore";
 import { formatCompactCurrency, formatCurrency } from "./formatters";
 
@@ -44,7 +46,8 @@ export function NetWorthChart({
 }: NetWorthChartProps) {
   const outcomeMode = useScenarioStore((state) => state.outcomeMode);
   const copy = OUTCOME_COPY[outcomeMode];
-  const breakEvenYear = getBreakEvenYear(results, outcomeMode);
+  const comparison = getComparisonYear(results, outcomeMode, displayMode);
+  const comparisonYear = comparison.year;
 
   const data: ChartRow[] = useMemo(
     () =>
@@ -78,20 +81,16 @@ export function NetWorthChart({
     [compareResults, displayMode, outcomeMode, results.comparison],
   );
 
-  const buyerLineName = compareResults ? `A ${copy.buyerLine.toLowerCase()}` : copy.buyerLine;
-  const renterLineName = compareResults ? `A ${copy.renterLine.toLowerCase()}` : copy.renterLine;
+  const buyerLineName = compareResults ? `${APP_LABELS.scenarioA} · ${copy.buyerLine}` : copy.buyerLine;
+  const renterLineName = compareResults ? `${APP_LABELS.scenarioA} · ${copy.renterLine}` : copy.renterLine;
 
   return (
-    <section className="operator-panel rounded-sm p-4 sm:p-5">
+    <section className="de-panel rounded-sm p-4 sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
         <div className="min-w-0">
-          <p className="operator-kicker">Unified_Spectrum</p>
-          <h2 className="operator-title mt-1 text-xl sm:text-2xl lg:text-3xl">
+          <h2 className="de-headline text-xl sm:text-2xl lg:text-3xl">
             {copy.chartTitle}
           </h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            {copy.chartDescription}
-          </p>
         </div>
         <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground sm:text-xs sm:tracking-[0.22em]">
           {displayMode === "real" ? "Inflation-adjusted" : "Nominal"} dollars
@@ -109,13 +108,15 @@ export function NetWorthChart({
             />
             <Tooltip content={<ChartTooltip compareMode={Boolean(compareResults)} />} />
             <Legend />
-            {breakEvenYear ? (
-              <ReferenceLine
-                label="Break-even"
-                stroke="hsl(var(--accent))"
-                x={breakEvenYear}
-              />
-            ) : null}
+            <ReferenceLine
+              label={{
+                fill: "hsl(var(--accent))",
+                position: "insideTopRight",
+                value: getBreakEvenMetricLabel(comparison.kind),
+              }}
+              stroke="hsl(var(--accent))"
+              x={comparisonYear}
+            />
             <Line
               animationDuration={0}
               dataKey="buyer"
@@ -143,7 +144,7 @@ export function NetWorthChart({
                   dataKey="buyerB"
                   dot={false}
                   isAnimationActive={false}
-                  name={`B ${copy.buyerLine.toLowerCase()}`}
+                  name={`${APP_LABELS.scenarioB} · ${copy.buyerLine}`}
                   stroke="hsl(var(--primary) / 0.55)"
                   strokeDasharray="8 6"
                   strokeWidth={3}
@@ -154,7 +155,7 @@ export function NetWorthChart({
                   dataKey="renterB"
                   dot={false}
                   isAnimationActive={false}
-                  name={`B ${copy.renterLine.toLowerCase()}`}
+                  name={`${APP_LABELS.scenarioB} · ${copy.renterLine}`}
                   stroke="hsl(var(--accent) / 0.55)"
                   strokeDasharray="8 6"
                   strokeWidth={3}
@@ -193,9 +194,9 @@ function ChartTooltip({
   return (
     <div className="rounded-sm border border-primary/30 bg-card/95 p-3 text-sm shadow-[0_0_28px_hsl(var(--primary)/0.16)]">
       <p className="font-semibold">Year {label}</p>
-      <p>{compareMode ? "A buyer" : "Buyer"}: {formatCurrency(buyer)}</p>
-      <p>{compareMode ? "A renter" : "Renter"}: {formatCurrency(renter)}</p>
-      <p className="font-semibold">A delta: {formatCurrency(delta)}</p>
+      <p>{compareMode ? "A buyer" : APP_LABELS.ifBuying}: {formatCurrency(buyer)}</p>
+      <p>{compareMode ? "A renter" : APP_LABELS.ifRenting}: {formatCurrency(renter)}</p>
+      <p className="font-semibold">Delta: {formatCurrency(delta)}</p>
       {buyerB !== undefined && renterB !== undefined ? (
         <>
           <p>B buyer: {formatCurrency(buyerB)}</p>

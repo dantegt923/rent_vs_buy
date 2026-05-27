@@ -15,7 +15,7 @@ export function InvestmentSection({ scenarioId }: { scenarioId: ScenarioId }) {
   );
 
   return (
-    <SectionCard eyebrow="Opportunity cost" title="Investment">
+    <SectionCard eyebrow="Alternative return" title="What your money could earn instead">
       <NumberSliderInput
         format="percent"
         label="Expected nominal return"

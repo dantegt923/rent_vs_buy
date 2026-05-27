@@ -16,10 +16,10 @@ export function YearByYearTable({
   label,
 }: YearByYearTableProps) {
   return (
-    <details className="operator-panel rounded-sm">
+    <details className="de-panel rounded-sm">
       <summary className="cursor-pointer list-none px-4 py-4 sm:px-5">
-        <p className="operator-kicker">{"// "}Details</p>
-        <h2 className="operator-title mt-1 text-2xl sm:text-3xl">
+        <p className="de-kicker">{"// "}Details</p>
+        <h2 className="de-headline mt-1 text-2xl sm:text-3xl">
           Year-by-Year Output{label ? ` · ${label}` : ""}
         </h2>
       </summary>

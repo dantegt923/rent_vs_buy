@@ -2,84 +2,69 @@
 
 import type { ScenarioResults } from "@/lib/engine";
 import {
-  getBreakEvenYear,
-  getComparisonValues,
+  buildHeadlineCopy,
+  getBreakEvenMetricLabel,
+  getComparisonYear,
   OUTCOME_COPY,
 } from "@/lib/results/outcomeDisplay";
+import { APP_LABELS } from "@/lib/ui/labels";
 import { useScenarioStore, type DisplayMode } from "@/lib/store/scenarioStore";
-import { NumberSliderInput } from "@/components/inputs/NumberSliderInput";
-import { OutcomeModeToggle } from "@/components/scenario/OutcomeModeToggle";
-import Link from "next/link";
 import { formatCurrency } from "./formatters";
 
 interface HeadlineResultProps {
   results: ScenarioResults;
   displayMode: DisplayMode;
   label?: string;
-  showOutcomeToggle?: boolean;
 }
 
 export function HeadlineResult({
   results,
   displayMode,
   label,
-  showOutcomeToggle = true,
 }: HeadlineResultProps) {
-  const headlineYear = useScenarioStore((state) => state.headlineYear);
   const outcomeMode = useScenarioStore((state) => state.outcomeMode);
-  const setHeadlineYear = useScenarioStore((state) => state.setHeadlineYear);
-  const row = results.comparison[headlineYear - 1];
-  const values = getComparisonValues(row, displayMode, outcomeMode);
+  const yearsStaying = results.inputs.saleYear;
+  const comparison = getComparisonYear(results, outcomeMode, displayMode);
   const copy = OUTCOME_COPY[outcomeMode];
-  const delta = values.delta;
-  const buyerWins = delta >= 0;
-  const breakEvenYear = getBreakEvenYear(results, outcomeMode);
+  const { values, kind } = comparison;
+  const buyerWins = values.delta >= 0;
+  const headlineText = buildHeadlineCopy(comparison, outcomeMode);
 
   return (
-    <section className="operator-panel rounded-sm p-4 sm:p-6">
-      <div className="flex items-start justify-between gap-3">
-        <p className="operator-kicker min-w-0">
-          SYS.STATUS: {label ? `${label} · ` : ""}
-          {copy.sysStatus}
-        </p>
-        {showOutcomeToggle ? <OutcomeModeToggle /> : null}
-      </div>
-      <h2 className="operator-title mt-3 text-2xl leading-[1.05] sm:text-3xl md:text-4xl lg:text-5xl lg:leading-[0.92]">
-        At year {headlineYear}, buying leaves you{" "}
-        <span className={buyerWins ? "text-primary" : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]"}>
-          {formatCurrency(Math.abs(delta))}
-        </span>{" "}
-        {buyerWins ? "ahead" : "behind"} versus renting.
+    <section className="de-panel rounded-sm p-4 sm:p-6 lg:p-8">
+      {label ? (
+        <p className="de-kicker">{label}</p>
+      ) : null}
+      <h2 className="de-headline mt-2 text-2xl leading-[1.05] sm:text-3xl md:text-4xl lg:text-5xl lg:leading-[0.92]">
+        {headlineText.split(/(\$[\d,]+)/).map((part, index) =>
+          part.startsWith("$") ? (
+            <span
+              className={
+                buyerWins
+                  ? "text-primary"
+                  : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]"
+              }
+              key={index}
+            >
+              {part}
+            </span>
+          ) : (
+            <span key={index}>{part}</span>
+          ),
+        )}
       </h2>
       <p className="mt-3 max-w-3xl text-sm text-muted-foreground">{copy.description}</p>
-      <p className="mt-2 text-xs text-muted-foreground">
-        <Link className="font-semibold text-primary hover:underline" href="/methodology">
-          Read the methodology
-        </Link>{" "}
-        for a full walkthrough of each path.
-      </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <Metric label="Break-even year" value={breakEvenYear ?? "None"} />
         <Metric
-          label={copy.buyerMetric}
-          value={formatCurrency(values.buyer)}
+          label={getBreakEvenMetricLabel(kind)}
+          value={comparison.breakEven.year}
         />
-        <Metric
-          label={copy.renterMetric}
-          value={formatCurrency(values.renter)}
-        />
+        <Metric label={copy.buyerMetric} value={formatCurrency(values.buyer)} />
+        <Metric label={copy.renterMetric} value={formatCurrency(values.renter)} />
       </div>
-      <div className="mt-6">
-        <NumberSliderInput
-          label="Headline year"
-          max={results.inputs.horizonYears}
-          min={1}
-          onChange={setHeadlineYear}
-          step={1}
-          suffix="years"
-          value={headlineYear}
-        />
-      </div>
+      <p className="mt-4 text-xs text-muted-foreground">
+        Planned stay: {yearsStaying} years · Horizon: {results.inputs.horizonYears} years
+      </p>
     </section>
   );
 }

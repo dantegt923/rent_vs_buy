@@ -1,0 +1,15 @@
+export const APP_LABELS = {
+  assumptionsTitle: "Your assumptions",
+  yearsStaying: "Years staying",
+  compareScenarios: "Compare scenarios",
+  settings: "Settings",
+  ifBuying: "If buying",
+  ifRenting: "If renting",
+  financialOutcome: "Financial outcome",
+  netWorth: "Net worth",
+  chartTitle: "Buy vs. rent over time",
+  yearByYear: "Year-by-year output",
+  methodology: "Methodology",
+  scenarioA: "Scenario A",
+  scenarioB: "Scenario B",
+} as const;

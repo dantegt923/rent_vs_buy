@@ -37,13 +37,13 @@ interface ScenarioStoreState {
   displayMode: DisplayMode;
   outcomeMode: OutcomeMode;
   themeMode: ThemeMode;
-  headlineYear: number;
+  showAdvancedAssumptions: boolean;
   setActiveScenarioId: (scenarioId: ScenarioId) => void;
   setCompareMode: (compareMode: boolean) => void;
   setDisplayMode: (displayMode: DisplayMode) => void;
   setOutcomeMode: (outcomeMode: OutcomeMode) => void;
   setThemeMode: (themeMode: ThemeMode) => void;
-  setHeadlineYear: (headlineYear: number) => void;
+  setShowAdvancedAssumptions: (showAdvancedAssumptions: boolean) => void;
   saveNamedScenario: (name: string, scenarioId?: ScenarioId) => void;
   loadSavedScenario: (savedScenarioId: string, targetScenarioId?: ScenarioId) => void;
   duplicateSavedScenario: (savedScenarioId: string) => void;
@@ -100,7 +100,7 @@ const DEFAULT_ZIP = "10001";
 const DEFAULT_INCOME = 175_000;
 
 export const defaultScenario: ScenarioInputs = {
-  horizonYears: 40,
+  horizonYears: 30,
   saleYear: 15,
   property: {
     zipCode: DEFAULT_ZIP,
@@ -160,9 +160,9 @@ export const useScenarioStore = create<ScenarioStoreState>()(
       compareMode: false,
       savedScenarios: [],
       displayMode: "nominal",
-      outcomeMode: "costAdjusted",
+      outcomeMode: "netWorth",
       themeMode: "dark",
-      headlineYear: defaultScenario.saleYear,
+      showAdvancedAssumptions: false,
       setActiveScenarioId: (activeScenarioId) =>
         set((state) => ({
           activeScenarioId,
@@ -172,10 +172,8 @@ export const useScenarioStore = create<ScenarioStoreState>()(
       setDisplayMode: (displayMode) => set({ displayMode }),
       setOutcomeMode: (outcomeMode) => set({ outcomeMode }),
       setThemeMode: (themeMode) => set({ themeMode }),
-      setHeadlineYear: (headlineYear) =>
-        set((state) => ({
-          headlineYear: clampYear(headlineYear, state.scenarios[state.activeScenarioId].horizonYears),
-        })),
+      setShowAdvancedAssumptions: (showAdvancedAssumptions) =>
+        set({ showAdvancedAssumptions }),
       saveNamedScenario: (name, scenarioId) =>
         set((state) => {
           const targetId = scenarioId ?? state.activeScenarioId;
@@ -270,12 +268,17 @@ export const useScenarioStore = create<ScenarioStoreState>()(
       setCashPurchase: (cashPurchase, scenarioId) =>
         set((state) => updateScenario(state, scenarioId, (scenario) => ({
           ...scenario,
+          horizonYears: cashPurchase ? 30 : getLoanTermYears(scenario),
           property: {
             ...scenario.property,
             purchaseMode: cashPurchase
               ? { kind: "cash" }
               : ensureMortgageMode(scenario.property.purchaseMode),
           },
+          saleYear: clampYear(
+            scenario.saleYear,
+            cashPurchase ? 30 : getLoanTermYears(scenario),
+          ),
         }))),
       setDownPayment: (downPayment, scenarioId) =>
         set((state) => updateScenario(state, scenarioId, (scenario) => ({
@@ -289,16 +292,22 @@ export const useScenarioStore = create<ScenarioStoreState>()(
           },
         }))),
       setMortgageField: (field, value, scenarioId) =>
-        set((state) => updateScenario(state, scenarioId, (scenario) => ({
-          ...scenario,
-          property: {
-            ...scenario.property,
-            purchaseMode: {
-              ...ensureMortgageMode(scenario.property.purchaseMode),
-              [field]: value,
+        set((state) => updateScenario(state, scenarioId, (scenario) => {
+          const mortgage = ensureMortgageMode(scenario.property.purchaseMode);
+          const nextMortgage = { ...mortgage, [field]: value };
+          const horizonYears =
+            field === "loanTermYears" ? value : scenario.horizonYears;
+
+          return {
+            ...scenario,
+            horizonYears,
+            saleYear: clampYear(scenario.saleYear, horizonYears),
+            property: {
+              ...scenario.property,
+              purchaseMode: nextMortgage,
             },
-          },
-        }))),
+          };
+        })),
       addLumpSumPrepayment: (scenarioId) =>
         set((state) => {
           return updateScenario(state, scenarioId, (scenario) => {
@@ -429,15 +438,11 @@ export const useScenarioStore = create<ScenarioStoreState>()(
           const targetId = scenarioId ?? state.activeScenarioId;
           const scenario = state.scenarios[targetId];
           const clampedSaleYear = clampYear(saleYear, scenario.horizonYears);
-          const nextState = replaceScenario(state, targetId, {
+
+          return replaceScenario(state, targetId, {
             ...scenario,
             saleYear: clampedSaleYear,
           });
-
-          return {
-            ...nextState,
-            headlineYear: targetId === state.activeScenarioId ? clampedSaleYear : state.headlineYear,
-          };
         }),
     }),
     {
@@ -451,7 +456,7 @@ export const useScenarioStore = create<ScenarioStoreState>()(
         displayMode: state.displayMode,
         outcomeMode: state.outcomeMode,
         themeMode: state.themeMode,
-        headlineYear: state.headlineYear,
+        showAdvancedAssumptions: state.showAdvancedAssumptions,
       }),
     },
   ),
@@ -520,6 +525,12 @@ function lookupState(zipCode: string): StateCode | null {
   }
 
   return null;
+}
+
+function getLoanTermYears(scenario: ScenarioInputs): number {
+  return scenario.property.purchaseMode.kind === "mortgage"
+    ? scenario.property.purchaseMode.loanTermYears
+    : 30;
 }
 
 function clampYear(year: number, horizonYears: number): number {

@@ -4,7 +4,15 @@ import { NumberSliderInput } from "@/components/inputs/NumberSliderInput";
 import { type ScenarioId, useScenarioStore } from "@/lib/store/scenarioStore";
 import { SectionCard } from "./SectionCard";
 
-export function PropertySection({ scenarioId }: { scenarioId: ScenarioId }) {
+type SectionMode = "simple" | "advanced";
+
+export function PropertySection({
+  scenarioId,
+  mode = "simple",
+}: {
+  scenarioId: ScenarioId;
+  mode?: SectionMode;
+}) {
   const scenario = useScenarioStore((state) => state.scenarios[scenarioId]);
   const setZipCode = useScenarioStore((state) => state.setZipCode);
   const setHomePrice = useScenarioStore((state) => state.setHomePrice);
@@ -15,6 +23,22 @@ export function PropertySection({ scenarioId }: { scenarioId: ScenarioId }) {
     purchaseMode.kind === "mortgage"
       ? purchaseMode.downPayment
       : { kind: "percent" as const, value: 100 };
+
+  if (mode === "advanced") {
+    return (
+      <SectionCard eyebrow="Purchase" title="Property">
+        <label className="flex items-center justify-between gap-4 rounded-lg border px-3 py-2 text-sm font-semibold">
+          Buy in cash
+          <input
+            checked={purchaseMode.kind === "cash"}
+            className="h-4 w-4 accent-primary"
+            type="checkbox"
+            onChange={(event) => setCashPurchase(event.target.checked, scenarioId)}
+          />
+        </label>
+      </SectionCard>
+    );
+  }
 
   return (
     <SectionCard eyebrow="Inputs" title="Property">
@@ -38,15 +62,6 @@ export function PropertySection({ scenarioId }: { scenarioId: ScenarioId }) {
         step={5_000}
         value={scenario.property.homePrice}
       />
-      <label className="flex items-center justify-between gap-4 rounded-lg border px-3 py-2 text-sm font-semibold">
-        Buy in cash
-        <input
-          checked={purchaseMode.kind === "cash"}
-          className="h-4 w-4 accent-primary"
-          type="checkbox"
-          onChange={(event) => setCashPurchase(event.target.checked, scenarioId)}
-        />
-      </label>
       {purchaseMode.kind === "mortgage" ? (
         <div className="space-y-3">
           <div className="flex rounded-lg border bg-secondary p-1 text-sm">

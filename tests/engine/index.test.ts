@@ -6,9 +6,9 @@ describe("calculate", () => {
   it("returns complete scenario results for the selected sale year", () => {
     const results = calculate(baseScenario({ saleYear: 15 }));
 
-    expect(results.buyPath).toHaveLength(40);
-    expect(results.rentPath).toHaveLength(40);
-    expect(results.comparison).toHaveLength(40);
+    expect(results.buyPath).toHaveLength(30);
+    expect(results.rentPath).toHaveLength(30);
+    expect(results.comparison).toHaveLength(30);
     expect(results.saleYearResult.year).toBe(15);
   });
 

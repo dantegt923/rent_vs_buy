@@ -20,7 +20,7 @@ const AssumptionsPanelsContext = createContext<AssumptionsPanelsContextValue | n
 );
 
 export function AssumptionsPanelsProvider({ children }: { children: ReactNode }) {
-  const [bulkOpen, setBulkOpen] = useState(true);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkVersion, setBulkVersion] = useState(0);
 
   const value = useMemo(
@@ -47,7 +47,7 @@ export function useAssumptionsPanelState(): {
   setOpen: (open: boolean) => void;
 } {
   const context = useContext(AssumptionsPanelsContext);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!context) {

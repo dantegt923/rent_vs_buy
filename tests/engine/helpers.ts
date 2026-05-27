@@ -2,7 +2,7 @@ import type { ScenarioInputs } from "@/lib/engine";
 
 export function baseScenario(overrides: Partial<ScenarioInputs> = {}): ScenarioInputs {
   const scenario: ScenarioInputs = {
-    horizonYears: 40,
+    horizonYears: 30,
     saleYear: 15,
     property: {
       zipCode: "10001",

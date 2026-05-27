@@ -169,12 +169,20 @@ export interface ComparisonYearResult {
   realNetWorthDelta: number;
 }
 
+export type BreakEvenKind = "durable" | "firstIntersection" | "closestToEven";
+
+export interface BreakEvenResult {
+  year: number;
+  kind: BreakEvenKind;
+  deltaAtYear: number;
+}
+
 export interface ScenarioResults {
   inputs: ScenarioInputs;
   buyPath: BuyYearResult[];
   rentPath: RentYearResult[];
   comparison: ComparisonYearResult[];
-  breakEvenYear: number | null;
-  netWorthBreakEvenYear: number | null;
+  breakEven: BreakEvenResult;
+  netWorthBreakEven: BreakEvenResult;
   saleYearResult: ComparisonYearResult;
 }

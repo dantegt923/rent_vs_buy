@@ -51,25 +51,51 @@ describe("investment assumption toggles", () => {
   });
 
   it("adds a buyer side portfolio without double-counting home equity", () => {
-    const withoutToggle = calculate(
-      baseScenario({
-        investment: {
-          expectedAnnualReturn: 0.07,
-          annualTaxDrag: 0,
-          taxAdvantagedAccountPercent: 0,
-          equalizeRenterCashflow: false,
-          investBuyerCashflowSavings: false,
-        },
-      }),
-    );
     const withToggle = calculate(
       baseScenario({
+        horizonYears: 40,
+        property: {
+          ...baseScenario().property,
+          purchaseMode: {
+            kind: "mortgage",
+            downPayment: { kind: "percent", value: 0.2 },
+            mortgageRate: 0.07,
+            loanTermYears: 40,
+            pmiRate: 0.005,
+            extraMonthlyPayment: 0,
+            lumpSumPrepayments: [],
+          },
+        },
         investment: {
           expectedAnnualReturn: 0.07,
           annualTaxDrag: 0,
           taxAdvantagedAccountPercent: 0,
           equalizeRenterCashflow: false,
           investBuyerCashflowSavings: true,
+        },
+      }),
+    );
+    const withoutToggle = calculate(
+      baseScenario({
+        horizonYears: 40,
+        property: {
+          ...baseScenario().property,
+          purchaseMode: {
+            kind: "mortgage",
+            downPayment: { kind: "percent", value: 0.2 },
+            mortgageRate: 0.07,
+            loanTermYears: 40,
+            pmiRate: 0.005,
+            extraMonthlyPayment: 0,
+            lumpSumPrepayments: [],
+          },
+        },
+        investment: {
+          expectedAnnualReturn: 0.07,
+          annualTaxDrag: 0,
+          taxAdvantagedAccountPercent: 0,
+          equalizeRenterCashflow: false,
+          investBuyerCashflowSavings: false,
         },
       }),
     );

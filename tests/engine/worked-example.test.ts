@@ -62,11 +62,11 @@ describe("worked example", () => {
         };
       });
 
-      console.log(JSON.stringify({ breakEvenYear: results.breakEvenYear }, null, 2));
+      console.log(JSON.stringify({ breakEven: results.breakEven }, null, 2));
       console.table(rows);
     }
 
     expect(results.saleYearResult.year).toBe(15);
-    expect(results.comparison).toHaveLength(40);
+    expect(results.comparison).toHaveLength(30);
   });
 });

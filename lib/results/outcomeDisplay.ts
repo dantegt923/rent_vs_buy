@@ -1,8 +1,10 @@
+import { getBreakEvenKindLabel, resolveBreakEven, type BreakEvenKind, type BreakEvenResult, type ScenarioResults } from "@/lib/engine";
 import type { ComparisonYearResult } from "@/lib/engine";
+import { APP_LABELS } from "@/lib/ui/labels";
 import type { DisplayMode, OutcomeMode } from "@/lib/store/scenarioStore";
 
 export interface OutcomeCopy {
-  sysStatus: string;
+  headlineFraming: string;
   description: string;
   buyerMetric: string;
   renterMetric: string;
@@ -14,28 +16,28 @@ export interface OutcomeCopy {
 
 export const OUTCOME_COPY: Record<OutcomeMode, OutcomeCopy> = {
   costAdjusted: {
-    sysStatus: "cost-adjusted net position",
+    headlineFraming: "financial outcome",
     description:
-      "This is an unrecoverable cost-adjusted net position. It measures what you keep after liquidating (home sale or portfolio, after tax) minus housing costs you cannot recover through those assets. Down payment, closing costs, and mortgage principal are excluded from costs because they return through home equity at sale.",
-    buyerMetric: "Buyer adjusted position",
-    renterMetric: "Renter adjusted position",
-    chartTitle: "Cost-Adjusted Net Position: Buy vs. Rent",
+      "Financial outcome measures what you keep after liquidating (home sale or portfolio, after tax) minus housing costs you cannot recover through those assets. Down payment, closing costs, and mortgage principal are excluded from costs because they return through home equity at sale.",
+    buyerMetric: APP_LABELS.ifBuying,
+    renterMetric: APP_LABELS.ifRenting,
+    chartTitle: APP_LABELS.chartTitle,
     chartDescription:
       "Unrecoverable housing costs minus asset recovery on each path. Optional cashflow assumptions in Investment can shift the renter or buyer line when toggled on.",
-    buyerLine: "Buyer adjusted position",
-    renterLine: "Renter adjusted position",
+    buyerLine: APP_LABELS.ifBuying,
+    renterLine: APP_LABELS.ifRenting,
   },
   netWorth: {
-    sysStatus: "net worth",
+    headlineFraming: "net worth",
     description:
-      "This is net worth at the horizon year if you liquidate at that point: estimated home sale proceeds plus any buyer side portfolio, versus the renter's portfolio after tax. It does not subtract cumulative housing costs paid along the way.",
-    buyerMetric: "Buyer net worth",
-    renterMetric: "Renter net worth",
-    chartTitle: "Net Worth: Buy vs. Rent",
+      "Net worth at the comparison year if you liquidate at that point: estimated home sale proceeds plus any buyer side portfolio, versus the renter's portfolio after tax. It does not subtract cumulative housing costs paid along the way.",
+    buyerMetric: APP_LABELS.ifBuying,
+    renterMetric: APP_LABELS.ifRenting,
+    chartTitle: APP_LABELS.chartTitle,
     chartDescription:
       "Liquidation value on each path at every year—home sale plus side portfolio for buyers, investment portfolio for renters.",
-    buyerLine: "Buyer net worth",
-    renterLine: "Renter net worth",
+    buyerLine: APP_LABELS.ifBuying,
+    renterLine: APP_LABELS.ifRenting,
   },
 };
 
@@ -43,6 +45,13 @@ export interface ComparisonValues {
   buyer: number;
   renter: number;
   delta: number;
+}
+
+export interface ComparisonYearContext {
+  year: number;
+  kind: BreakEvenKind;
+  values: ComparisonValues;
+  breakEven: BreakEvenResult;
 }
 
 export function getComparisonValues(
@@ -65,11 +74,63 @@ export function getComparisonValues(
   };
 }
 
-export function getBreakEvenYear(
-  results: { breakEvenYear: number | null; netWorthBreakEvenYear: number | null },
+export function getBreakEvenResult(
+  results: ScenarioResults,
   outcomeMode: OutcomeMode,
-): number | null {
-  return outcomeMode === "netWorth"
-    ? results.netWorthBreakEvenYear
-    : results.breakEvenYear;
+  displayMode: DisplayMode,
+): BreakEvenResult {
+  const useReal = displayMode === "real";
+  return resolveBreakEven(results.comparison, outcomeMode, useReal);
+}
+
+export function getBreakEvenYear(
+  results: ScenarioResults,
+  outcomeMode: OutcomeMode,
+  displayMode: DisplayMode = "nominal",
+): number {
+  return getBreakEvenResult(results, outcomeMode, displayMode).year;
+}
+
+export function getComparisonYear(
+  results: ScenarioResults,
+  outcomeMode: OutcomeMode,
+  displayMode: DisplayMode,
+): ComparisonYearContext {
+  const breakEven = getBreakEvenResult(results, outcomeMode, displayMode);
+  const row = results.comparison[breakEven.year - 1];
+
+  return {
+    year: breakEven.year,
+    kind: breakEven.kind,
+    values: getComparisonValues(row, displayMode, outcomeMode),
+    breakEven,
+  };
+}
+
+export function getBreakEvenMetricLabel(kind: BreakEvenKind): string {
+  return getBreakEvenKindLabel(kind);
+}
+
+export function buildHeadlineCopy(
+  context: ComparisonYearContext,
+  outcomeMode: OutcomeMode,
+): string {
+  const { kind, values } = context;
+  const amount = Math.abs(values.delta);
+  const direction = values.delta >= 0 ? "ahead" : "behind";
+  const framing = OUTCOME_COPY[outcomeMode].headlineFraming;
+
+  if (kind === "durable") {
+    return `Break-even is year ${context.breakEven.year}. At that point, buying leaves you $${formatPlainCurrency(amount)} ${direction} on ${framing}.`;
+  }
+
+  if (kind === "firstIntersection") {
+    return `Buying first leads in year ${context.breakEven.year}. At that point, buying leaves you $${formatPlainCurrency(amount)} ${direction} on ${framing}.`;
+  }
+
+  return `The paths are closest in year ${context.breakEven.year}. At that point, buying leaves you $${formatPlainCurrency(amount)} ${direction} on ${framing}.`;
+}
+
+function formatPlainCurrency(value: number): string {
+  return Math.round(value).toLocaleString("en-US");
 }
