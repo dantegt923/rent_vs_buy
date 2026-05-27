@@ -49,9 +49,6 @@ export function PropertySection({
           value={scenario.property.zipCode}
           onChange={(event) => setZipCode(event.target.value, scenarioId)}
         />
-        <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-          Manual
-        </span>
       </label>
       <NumberSliderInput
         format="currency"

@@ -2,12 +2,11 @@
 
 import type { ScenarioResults } from "@/lib/engine";
 import {
-  buildHeadlineCopy,
+  buildHeadlineParts,
   getBreakEvenMetricLabel,
   getComparisonYear,
   OUTCOME_COPY,
 } from "@/lib/results/outcomeDisplay";
-import { APP_LABELS } from "@/lib/ui/labels";
 import { useScenarioStore, type DisplayMode } from "@/lib/store/scenarioStore";
 import { formatCurrency } from "./formatters";
 
@@ -27,33 +26,43 @@ export function HeadlineResult({
   const comparison = getComparisonYear(results, outcomeMode, displayMode);
   const copy = OUTCOME_COPY[outcomeMode];
   const { values, kind } = comparison;
-  const buyerWins = values.delta >= 0;
-  const headlineText = buildHeadlineCopy(comparison, outcomeMode);
+  const headline = buildHeadlineParts(comparison, outcomeMode);
+  const amountMatch = headline.amountLine.match(/\$[\d,]+/);
+  const amountText = amountMatch?.[0] ?? "";
+  const amountSuffix = headline.amountLine.slice(
+    headline.amountLine.indexOf(amountText) + amountText.length,
+  );
+  const amountPrefix = headline.amountLine.slice(
+    0,
+    headline.amountLine.indexOf(amountText),
+  );
 
   return (
     <section className="de-panel rounded-sm p-4 sm:p-6 lg:p-8">
       {label ? (
         <p className="de-kicker">{label}</p>
       ) : null}
-      <h2 className="de-headline mt-2 text-2xl leading-[1.05] sm:text-3xl md:text-4xl lg:text-5xl lg:leading-[0.92]">
-        {headlineText.split(/(\$[\d,]+)/).map((part, index) =>
-          part.startsWith("$") ? (
-            <span
-              className={
-                buyerWins
-                  ? "text-primary"
-                  : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]"
-              }
-              key={index}
-            >
-              {part}
-            </span>
-          ) : (
-            <span key={index}>{part}</span>
-          ),
-        )}
-      </h2>
-      <p className="mt-3 max-w-3xl text-sm text-muted-foreground">{copy.description}</p>
+      <div className="mt-2 space-y-3">
+        <p className="text-base font-medium leading-relaxed text-muted-foreground sm:text-lg">
+          {headline.contextLine}
+        </p>
+        <h2 className="de-headline text-2xl leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] lg:leading-tight">
+          {amountPrefix}
+          <span
+            className={
+              headline.buyerWins
+                ? "text-primary"
+                : "text-accent drop-shadow-[0_0_18px_hsl(var(--accent)/0.35)]"
+            }
+          >
+            {amountText}
+          </span>
+          {amountSuffix}
+        </h2>
+      </div>
+      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+        {copy.description}
+      </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         <Metric
           label={getBreakEvenMetricLabel(kind)}

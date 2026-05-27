@@ -54,6 +54,13 @@ export interface ComparisonYearContext {
   breakEven: BreakEvenResult;
 }
 
+export interface HeadlineParts {
+  contextLine: string;
+  amountLine: string;
+  amount: number;
+  buyerWins: boolean;
+}
+
 export function getComparisonValues(
   row: ComparisonYearResult,
   displayMode: DisplayMode,
@@ -111,24 +118,50 @@ export function getBreakEvenMetricLabel(kind: BreakEvenKind): string {
   return getBreakEvenKindLabel(kind);
 }
 
+export function buildHeadlineParts(
+  context: ComparisonYearContext,
+  outcomeMode: OutcomeMode,
+): HeadlineParts {
+  const { kind, values } = context;
+  const amount = Math.abs(values.delta);
+  const buyerWins = values.delta >= 0;
+  const direction = buyerWins ? "ahead" : "behind";
+  const framing = OUTCOME_COPY[outcomeMode].headlineFraming;
+  const formattedAmount = `$${formatPlainCurrency(amount)}`;
+
+  if (kind === "durable") {
+    return {
+      contextLine: `Break-even is year ${context.breakEven.year}.`,
+      amountLine: `At that point, buying leaves you ${formattedAmount} ${direction} on ${framing}.`,
+      amount,
+      buyerWins,
+    };
+  }
+
+  if (kind === "firstIntersection") {
+    return {
+      contextLine: `Buying leads starting in year ${context.breakEven.year}.`,
+      amountLine: `At that point, buying leaves you ${formattedAmount} ${direction} on ${framing}.`,
+      amount,
+      buyerWins,
+    };
+  }
+
+  return {
+    contextLine: `The paths are closest in year ${context.breakEven.year}.`,
+    amountLine: `At that point, buying leaves you ${formattedAmount} ${direction} on ${framing}.`,
+    amount,
+    buyerWins,
+  };
+}
+
+/** @deprecated Use buildHeadlineParts for structured rendering. */
 export function buildHeadlineCopy(
   context: ComparisonYearContext,
   outcomeMode: OutcomeMode,
 ): string {
-  const { kind, values } = context;
-  const amount = Math.abs(values.delta);
-  const direction = values.delta >= 0 ? "ahead" : "behind";
-  const framing = OUTCOME_COPY[outcomeMode].headlineFraming;
-
-  if (kind === "durable") {
-    return `Break-even is year ${context.breakEven.year}. At that point, buying leaves you $${formatPlainCurrency(amount)} ${direction} on ${framing}.`;
-  }
-
-  if (kind === "firstIntersection") {
-    return `Buying first leads in year ${context.breakEven.year}. At that point, buying leaves you $${formatPlainCurrency(amount)} ${direction} on ${framing}.`;
-  }
-
-  return `The paths are closest in year ${context.breakEven.year}. At that point, buying leaves you $${formatPlainCurrency(amount)} ${direction} on ${framing}.`;
+  const parts = buildHeadlineParts(context, outcomeMode);
+  return `${parts.contextLine} ${parts.amountLine}`;
 }
 
 function formatPlainCurrency(value: number): string {

@@ -142,9 +142,6 @@ export function NumberSliderInput({
         <span>{formatTick(min, format, suffix)}</span>
         <span>{formatTick(max, format, suffix)}</span>
       </div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-primary/80">
-        Source: Manual
-      </p>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import {
   CartesianGrid,
+  Label,
   Legend,
   Line,
   LineChart,
@@ -39,6 +40,9 @@ interface ChartRow {
   deltaB?: number;
 }
 
+const BREAK_EVEN_COLOR = "hsl(var(--accent))";
+const YEARS_STAYING_COLOR = "hsl(210 18% 62%)";
+
 export function NetWorthChart({
   results,
   compareResults,
@@ -47,7 +51,10 @@ export function NetWorthChart({
   const outcomeMode = useScenarioStore((state) => state.outcomeMode);
   const copy = OUTCOME_COPY[outcomeMode];
   const comparison = getComparisonYear(results, outcomeMode, displayMode);
-  const comparisonYear = comparison.year;
+  const breakEvenYear = comparison.breakEven.year;
+  const yearsStaying = results.inputs.saleYear;
+  const horizonYears = results.inputs.horizonYears;
+  const markersOverlap = breakEvenYear === yearsStaying;
 
   const data: ChartRow[] = useMemo(
     () =>
@@ -83,6 +90,7 @@ export function NetWorthChart({
 
   const buyerLineName = compareResults ? `${APP_LABELS.scenarioA} · ${copy.buyerLine}` : copy.buyerLine;
   const renterLineName = compareResults ? `${APP_LABELS.scenarioA} · ${copy.renterLine}` : copy.renterLine;
+  const breakEvenLabel = getBreakEvenMetricLabel(comparison.kind);
 
   return (
     <section className="de-panel rounded-sm p-4 sm:p-5">
@@ -96,9 +104,22 @@ export function NetWorthChart({
           {displayMode === "real" ? "Inflation-adjusted" : "Nominal"} dollars
         </p>
       </div>
+      <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em]">
+        <span className="inline-flex items-center gap-2 text-muted-foreground">
+          <span className="h-0 w-5 border-t-2 border-dashed" style={{ borderColor: BREAK_EVEN_COLOR }} />
+          {breakEvenLabel} · year {breakEvenYear}
+        </span>
+        <span className="inline-flex items-center gap-2 text-muted-foreground">
+          <span className="h-0 w-5 border-t-2 border-dashed" style={{ borderColor: YEARS_STAYING_COLOR }} />
+          {APP_LABELS.yearsStaying} · year {yearsStaying}
+        </span>
+      </div>
       <div className="h-[240px] min-h-[240px] w-full min-w-0 sm:h-[300px] lg:h-[360px]">
         <ResponsiveContainer height="100%" width="100%">
-          <LineChart data={data} margin={{ bottom: 8, left: 12, right: 20, top: 8 }}>
+          <LineChart
+            data={data}
+            margin={{ bottom: 8, left: 12, right: 28, top: 28 }}
+          >
             <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
             <XAxis dataKey="year" tickLine={false} />
             <YAxis
@@ -109,14 +130,43 @@ export function NetWorthChart({
             <Tooltip content={<ChartTooltip compareMode={Boolean(compareResults)} />} />
             <Legend />
             <ReferenceLine
-              label={{
-                fill: "hsl(var(--accent))",
-                position: "insideTopRight",
-                value: getBreakEvenMetricLabel(comparison.kind),
-              }}
-              stroke="hsl(var(--accent))"
-              x={comparisonYear}
-            />
+              stroke={BREAK_EVEN_COLOR}
+              strokeDasharray="6 4"
+              strokeWidth={2}
+              x={breakEvenYear}
+            >
+              <Label
+                content={
+                  <ChartMarkerLabel
+                    fill={BREAK_EVEN_COLOR}
+                    horizonYears={horizonYears}
+                    offsetY={markersOverlap ? 0 : 0}
+                    text={`Year ${breakEvenYear}`}
+                    year={breakEvenYear}
+                  />
+                }
+                position="top"
+              />
+            </ReferenceLine>
+            <ReferenceLine
+              stroke={YEARS_STAYING_COLOR}
+              strokeDasharray="3 6"
+              strokeWidth={2}
+              x={yearsStaying}
+            >
+              <Label
+                content={
+                  <ChartMarkerLabel
+                    fill={YEARS_STAYING_COLOR}
+                    horizonYears={horizonYears}
+                    offsetY={markersOverlap ? 16 : 0}
+                    text={`Stay ${yearsStaying}y`}
+                    year={yearsStaying}
+                  />
+                }
+                position="top"
+              />
+            </ReferenceLine>
             <Line
               animationDuration={0}
               dataKey="buyer"
@@ -167,6 +217,43 @@ export function NetWorthChart({
         </ResponsiveContainer>
       </div>
     </section>
+  );
+}
+
+function ChartMarkerLabel({
+  viewBox,
+  text,
+  fill,
+  year,
+  horizonYears,
+  offsetY = 0,
+}: {
+  viewBox?: { x?: number; y?: number };
+  text: string;
+  fill: string;
+  year: number;
+  horizonYears: number;
+  offsetY?: number;
+}) {
+  const x = viewBox?.x ?? 0;
+  const y = (viewBox?.y ?? 0) - 10 - offsetY;
+  const nearLeftAxis = year <= Math.max(3, Math.round(horizonYears * 0.2));
+  const textAnchor = nearLeftAxis ? "start" : "middle";
+  const dx = nearLeftAxis ? 6 : 0;
+
+  return (
+    <text
+      dx={dx}
+      dy={0}
+      fill={fill}
+      fontSize={11}
+      fontWeight={700}
+      textAnchor={textAnchor}
+      x={x}
+      y={y}
+    >
+      {text}
+    </text>
   );
 }
 

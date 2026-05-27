@@ -142,7 +142,7 @@ export function getBreakEvenKindLabel(kind: BreakEvenKind): string {
     case "durable":
       return "Break-even year";
     case "firstIntersection":
-      return "First year buying leads";
+      return "Year buying leads";
     case "closestToEven":
       return "Closest to even";
     default:
