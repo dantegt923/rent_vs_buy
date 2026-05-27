@@ -13,7 +13,6 @@ export function SimpleInputsPanel({ scenarioId }: { scenarioId: ScenarioId }) {
   const setDownPayment = useScenarioStore((state) => state.setDownPayment);
   const setMortgageField = useScenarioStore((state) => state.setMortgageField);
   const setRent = useScenarioStore((state) => state.setRent);
-  const setAppreciation = useScenarioStore((state) => state.setAppreciation);
   const setSaleYear = useScenarioStore((state) => state.setSaleYear);
 
   const purchaseMode = scenario.property.purchaseMode;
@@ -150,28 +149,6 @@ export function SimpleInputsPanel({ scenarioId }: { scenarioId: ScenarioId }) {
             step={1}
             suffix="years"
             value={scenario.saleYear}
-          />
-        </InputCard>
-        <InputCard>
-          <NumberSliderInput
-            format="percent"
-            label="Annual home appreciation"
-            max={10}
-            min={-2}
-            onChange={(value) => setAppreciation("annualRate", value / 100, scenarioId)}
-            step={0.1}
-            value={scenario.appreciation.annualRate * 100}
-          />
-        </InputCard>
-        <InputCard>
-          <NumberSliderInput
-            format="percent"
-            label="Annual rent growth"
-            max={10}
-            min={0}
-            onChange={(value) => setRent("annualRentGrowthRate", value / 100, scenarioId)}
-            step={0.1}
-            value={scenario.rent.annualRentGrowthRate * 100}
           />
         </InputCard>
       </div>

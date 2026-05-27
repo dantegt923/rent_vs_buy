@@ -38,15 +38,6 @@ export function AppreciationSection({
     <SectionCard eyebrow="Exit assumptions" title="Home Appreciation">
       <NumberSliderInput
         format="percent"
-        label="Annual appreciation"
-        max={10}
-        min={-2}
-        onChange={(value) => setAppreciation("annualRate", value / 100, scenarioId)}
-        step={0.1}
-        value={appreciation.annualRate * 100}
-      />
-      <NumberSliderInput
-        format="percent"
         label="Selling costs"
         max={10}
         min={0}

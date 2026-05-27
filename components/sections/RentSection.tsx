@@ -20,6 +20,15 @@ export function RentSection({
     return (
       <SectionCard eyebrow="Rental path" title="Rent">
         <NumberSliderInput
+          format="percent"
+          label="Annual rent growth"
+          max={10}
+          min={0}
+          onChange={(value) => setRent("annualRentGrowthRate", value / 100, scenarioId)}
+          step={0.1}
+          value={rent.annualRentGrowthRate * 100}
+        />
+        <NumberSliderInput
           format="currency"
           label="Renter's insurance monthly"
           max={250}
@@ -42,15 +51,6 @@ export function RentSection({
         onChange={(value) => setRent("monthlyRent", value, scenarioId)}
         step={50}
         value={rent.monthlyRent}
-      />
-      <NumberSliderInput
-        format="percent"
-        label="Annual rent growth"
-        max={10}
-        min={0}
-        onChange={(value) => setRent("annualRentGrowthRate", value / 100, scenarioId)}
-        step={0.1}
-        value={rent.annualRentGrowthRate * 100}
       />
       <NumberSliderInput
         format="currency"

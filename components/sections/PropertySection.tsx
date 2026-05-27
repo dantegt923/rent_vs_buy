@@ -18,6 +18,8 @@ export function PropertySection({
   const setHomePrice = useScenarioStore((state) => state.setHomePrice);
   const setCashPurchase = useScenarioStore((state) => state.setCashPurchase);
   const setDownPayment = useScenarioStore((state) => state.setDownPayment);
+  const setAppreciation = useScenarioStore((state) => state.setAppreciation);
+  const appreciation = scenario.appreciation;
   const purchaseMode = scenario.property.purchaseMode;
   const downPayment =
     purchaseMode.kind === "mortgage"
@@ -36,6 +38,15 @@ export function PropertySection({
             onChange={(event) => setCashPurchase(event.target.checked, scenarioId)}
           />
         </label>
+        <NumberSliderInput
+          format="percent"
+          label="Annual home appreciation"
+          max={10}
+          min={-2}
+          onChange={(value) => setAppreciation("annualRate", value / 100, scenarioId)}
+          step={0.1}
+          value={appreciation.annualRate * 100}
+        />
       </SectionCard>
     );
   }

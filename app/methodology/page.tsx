@@ -39,9 +39,9 @@ export default function MethodologyPage() {
             <h2 className="de-headline text-2xl text-foreground">Simple vs. advanced inputs</h2>
             <p>
               Core inputs—ZIP, home price, rent, down payment, mortgage rate, and years
-              staying—are always visible. Optional growth rates sit on the same panel.
-              Everything else (loan details, ownership costs, taxes, investment assumptions,
-              inflation) lives in the collapsed <em>Your assumptions</em> accordion.
+              staying—are always visible. Growth rates and other details live in the
+              collapsed <em>Your assumptions</em> accordion (home appreciation under
+              Property, rent growth under Rent).
             </p>
           </section>
 
